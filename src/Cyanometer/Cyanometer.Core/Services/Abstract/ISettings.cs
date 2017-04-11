@@ -17,5 +17,7 @@
         bool ProcessAirQuality { get; }
         int SleepMinutes { get; }
         int CycleWaitMinutes { get; }
+        int InitialDelay { get; }
+        string StopCheckUrl { get; }
     }
 }

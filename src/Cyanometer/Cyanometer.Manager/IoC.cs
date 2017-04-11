@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Cyanometer.AirQuality.Services.Abstract;
 using Cyanometer.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Manager.Properties;
@@ -15,8 +16,11 @@ namespace Cyanometer.Manager
             Core.IoCRegistrar.Register(builder);
             SkyCalculator.IoC.Register(builder);
             Imagging.IoC.Register(builder);
+            AirQuality.IoC.Register(Settings.Default.AirQualitySource);
             builder.RegisterType<NLogger>().As<ILogger>();
-            builder.Register(c => Settings.Default).As<ISettings>();
+            builder.Register(c => Settings.Default)
+                .As<ISettings>()
+                .As<ITwitterSettings>();
             builder.RegisterType<Processor>().As<IProcessor>().SingleInstance();
             //builder.RegisterType<FileService>().As<IFileService>();
             //builder.RegisterType<ArsoService>().As<IArsoService>();

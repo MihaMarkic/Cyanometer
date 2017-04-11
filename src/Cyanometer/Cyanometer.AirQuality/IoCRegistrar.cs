@@ -1,13 +1,8 @@
-﻿using Autofac;
-using Autofac.Builder;
-using Autofac.Core;
-using Cyanometer.Core.Services.Abstract;
-using Cyanometer.Core.Services.Implementation;
-using Cyanometer.Core.Services.Logging;
-using System;
+﻿using System;
 using System.Diagnostics;
+using Autofac;
 
-namespace Cyanometer.Core
+namespace Cyanometer.AirQuality
 {
     public static class IoCRegistrar
     {
@@ -40,15 +35,6 @@ namespace Cyanometer.Core
 
         public static void Register(ContainerBuilder builder)
         {
-            builder.RegisterType<DaylightManager>().As<IDaylightManager>().SingleInstance();
-            builder.RegisterType<FileService>().As<IFileService>().SingleInstance();
-            builder.RegisterType<S3UploaderService>().As<IUploaderService>();
-            builder.RegisterType<FileService>().As<IFileService>();
-            builder.RegisterType<WebsiteNotificator>().As<IWebsiteNotificator>();
-            builder.RegisterType<RaspberryService>().As<IRaspberryService>();
-            builder.RegisterGeneratedFactory<LoggerFactory>(new TypedService(typeof(ILogger)));
-            builder.RegisterType<StopCheckService>().As<IStopCheckService>();
-            builder.RegisterType<NtpService>().As<INtpService>();
         }
 
         /// <summary>

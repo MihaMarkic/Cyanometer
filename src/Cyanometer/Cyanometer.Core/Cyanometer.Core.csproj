@@ -149,9 +149,13 @@
   <ItemGroup>
     <Compile Include="Core\Color.cs" />
     <Compile Include="Core\GetBluenessIndexResult.cs" />
+    <Compile Include="Core\Measurement.cs" />
+    <Compile Include="Core\Retrier.cs" />
     <Compile Include="Core\UploadResponse.cs" />
     <Compile Include="Services\Abstract\IFileService.cs" />
+    <Compile Include="Services\Abstract\INtpService.cs" />
     <Compile Include="Services\Abstract\IRaspberryService.cs" />
+    <Compile Include="Services\Abstract\IStopCheckService.cs" />
     <Compile Include="Services\Abstract\IUploaderService.cs" />
     <Compile Include="Services\Abstract\IWebsiteNotificator.cs" />
     <Compile Include="Services\Implementation\DaylightManager.cs" />
@@ -164,8 +168,10 @@
     <Compile Include="Services\Abstract\LogCategory.cs" />
     <Compile Include="Services\Abstract\LogEntryEventArgs.cs" />
     <Compile Include="Services\Implementation\FileService.cs" />
+    <Compile Include="Services\Implementation\NtpService.cs" />
     <Compile Include="Services\Implementation\RaspberryService.cs" />
     <Compile Include="Services\Implementation\S3UploaderService.cs" />
+    <Compile Include="Services\Implementation\StopCheckService.cs" />
     <Compile Include="Services\Implementation\WebsiteNotificator.cs" />
     <Compile Include="Services\Logging\Logger.cs" />
     <Compile Include="Services\Abstract\LogItem.cs" />

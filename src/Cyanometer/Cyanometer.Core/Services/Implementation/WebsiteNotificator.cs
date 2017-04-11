@@ -77,6 +77,61 @@ namespace Cyanometer.Core.Services.Implementation
             }
             return Task.FromResult( value);
         }
+
+        public static string MeasurementToString(Measurement measurement)
+        {
+            switch (measurement)
+            {
+                case Measurement.NO2:
+                    return "car";
+                case Measurement.SO2:
+                    return "factory";
+                case Measurement.PM10:
+                    return "house";
+                default:
+                    return "sun";
+
+            }
+        }
+        public Task<UploadResponse> NotifyAirQualityMeasurementAsync(int index, Measurement chief, DateTime date, CancellationToken ct)
+        {
+            var requestBody = new AirQualityContent
+            {
+                air_pollution_index = index.ToString(),
+                taken_at = date,
+                icon = MeasurementToString(chief)
+            };
+
+            string content = JsonConvert.SerializeObject(requestBody);
+
+            var client = new RestClient("http://cyanometer.herokuapp.com/");
+            var request = new RestRequest("api/environmental_datas", Method.POST);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddJsonBody(requestBody);
+
+            var response = client.Execute(request);
+            var result = JsonConvert.DeserializeObject<Response>(response.Content);
+            var value = new UploadResponse
+            {
+                IsSuccess = string.Equals(result.Status, "ok", StringComparison.Ordinal)
+            };
+            if (value.IsSuccess)
+            {
+                value.Message = result.Message;
+            }
+            else
+            {
+                value.Message = string.Join(",", result.Detail?.Select(d => d.Detail));
+            }
+            return Task.FromResult(value);
+        }
+    }
+
+    public class AirQualityContent
+    {
+        public string air_pollution_index { get; set; }
+        public string icon { get; set; }
+        public DateTime taken_at { get; set; }
     }
 
     [DebuggerDisplay("{Status,nq}")]

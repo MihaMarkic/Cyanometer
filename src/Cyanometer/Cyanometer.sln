@@ -22,6 +22,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{27177CF7-1
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.SkyCalculator.Test", "Test\Cyanometer.SkyCalculator.Test\Cyanometer.SkyCalculator.Test.csproj", "{3E799852-E27E-4112-BA94-85AF55BC419E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.AirQuality", "Cyanometer.AirQuality\Cyanometer.AirQuality.csproj", "{66FEFC95-3793-4738-907D-860D0F87AC26}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,6 +50,10 @@ Global
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66FEFC95-3793-4738-907D-860D0F87AC26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FEFC95-3793-4738-907D-860D0F87AC26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66FEFC95-3793-4738-907D-860D0F87AC26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66FEFC95-3793-4738-907D-860D0F87AC26}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

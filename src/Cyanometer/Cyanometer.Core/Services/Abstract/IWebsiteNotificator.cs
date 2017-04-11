@@ -8,5 +8,6 @@ namespace Cyanometer.Core.Services.Abstract
     public interface IWebsiteNotificator
     {
         Task<UploadResponse> NotifyAsync(string url, int factor, DateTime date, CancellationToken ct);
+        Task<UploadResponse> NotifyAirQualityMeasurementAsync(int index, Measurement chief, DateTime date, CancellationToken ct);
     }
 }

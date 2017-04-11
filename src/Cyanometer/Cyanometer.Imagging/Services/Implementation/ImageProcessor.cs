@@ -39,7 +39,7 @@ namespace Cyanometer.Imagging.Services.Implementation
             this.calculator = calculator;
         }
 
-        public async Task LoopAsync(TimeSpan interval, CancellationToken ct)
+        public async Task LoopAsync(CancellationToken ct)
         {
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Images processor started").Commit();
             try
@@ -47,53 +47,48 @@ namespace Cyanometer.Imagging.Services.Implementation
                 imagePath = Path.Combine(Path.GetDirectoryName(typeof(ImageProcessor).Assembly.Location), "Images");
                 fileService.CreateDirectory(imagePath);
 
-                // loop only when minutes are set
-                while (interval.TotalMinutes > 0)
+                await UploadAllAsync(ct);
+
+                if (daylightManager.IsDay())
                 {
-                    await UploadAllAsync(ct);
+                    var now = DateTime.Now;
+                    logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Date {now}").Commit();
+                    string imageName = GetImageName(now);
 
-                    if (daylightManager.IsDay())
+                    try
                     {
-                        var now = DateTime.Now;
-                        logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Date {now}").Commit();
-                        string imageName = GetImageName(now);
+                        // write index                    
+                        string indexFileName = GetFullImageFileName(imageName, null, "index");
+                        string coreName = Path.GetFileName(indexFileName);
+                        logger.LogDebug().WithCategory(LogCategory.Manager).WithMessage($"Writing index {coreName}");
+                        await fileService.WriteFileAsync(indexFileName, "", ct);
 
-                        try
-                        {
-                            // write index                    
-                            string indexFileName = GetFullImageFileName(imageName, null, "index");
-                            string coreName = Path.GetFileName(indexFileName);
-                            logger.LogDebug().WithCategory(LogCategory.Manager).WithMessage($"Writing index {coreName}");
-                            await fileService.WriteFileAsync(indexFileName, "", ct);
+                        string smallFileName = GetFullImageFileName(imageName, "small", "jpg");
+                        string largeFileName = GetFullImageFileName(imageName, "large", "jpg");
+                        string factorFileName = GetFullImageFileName(imageName, null, "factor");
 
-                            string smallFileName = GetFullImageFileName(imageName, "small", "jpg");
-                            string largeFileName = GetFullImageFileName(imageName, "large", "jpg");
-                            string factorFileName = GetFullImageFileName(imageName, null, "factor");
+                        logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Taking small photo {Path.GetFileName(smallFileName)}").Commit();
+                        await raspberry.TakePhotoAsync(smallFileName, new Size(800, 600), ct);
+                        logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Taking big photo {Path.GetFileName(largeFileName)}").Commit();
+                        Task bigPhoto = raspberry.TakePhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
 
-                            logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Taking small photo {Path.GetFileName(smallFileName)}").Commit();
-                            await raspberry.TakePhotoAsync(smallFileName, new Size(800, 600), ct);
-                            logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Taking big photo {Path.GetFileName(largeFileName)}").Commit();
-                            Task bigPhoto = raspberry.TakePhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
+                        logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage("Starting computing factor").Commit();
+                        var factor = await ComputeBluenessAsync(smallFileName, ct);
+                        logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor is {factor.Index}").Commit();
+                        await fileService.WriteFileAsync(factorFileName, $"{factor.Index}\n{now.ToString(CultureInfo.InvariantCulture)}", ct);
+                        logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor written to {Path.GetFileName(factorFileName)}").Commit();
 
-                            logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage("Starting computing factor").Commit();
-                            var factor = await ComputeBluenessAsync(smallFileName, ct);
-                            logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor is {factor.Index}").Commit();
-                            await fileService.WriteFileAsync(factorFileName, $"{factor.Index}\n{now.ToString(CultureInfo.InvariantCulture)}", ct);
-                            logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor written to {Path.GetFileName(factorFileName)}").Commit();
-
-                            await bigPhoto;
-                            await UploadGroupAsync(indexFileName, imageName, ct);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError().WithCategory(LogCategory.Manager).WithMessage("Error during loop").WithException(ex).Commit();
-                        }
+                        await bigPhoto;
+                        await UploadGroupAsync(indexFileName, imageName, ct);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("It is night, waiting for next").Commit();
+                        logger.LogError().WithCategory(LogCategory.Manager).WithMessage("Error during loop").WithException(ex).Commit();
                     }
-                    await Task.Delay(interval, ct);
+                }
+                else
+                {
+                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("It is night, waiting for next").Commit();
                 }
             }
             catch (OperationCanceledException)
