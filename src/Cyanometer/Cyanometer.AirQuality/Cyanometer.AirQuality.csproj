@@ -36,6 +36,9 @@
     <Reference Include="CoreTweet, Version=0.7.2.352, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CoreTweet.0.7.2.352\lib\net45\CoreTweet.dll</HintPath>
     </Reference>
+    <Reference Include="Exceptionless, Version=4.0.1934.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Exceptionless.4.0.1934\lib\net45\Exceptionless.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -45,17 +48,11 @@
     <Reference Include="Raspberry.IO.GeneralPurpose, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Raspberry.IO.GeneralPurpose.2.4\lib\net40\Raspberry.IO.GeneralPurpose.dll</HintPath>
     </Reference>
-    <Reference Include="Raspberry.IO.InterIntegratedCircuit, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WittyPiNet.1.1.2\lib\net45\Raspberry.IO.InterIntegratedCircuit.dll</HintPath>
-    </Reference>
     <Reference Include="Raspberry.IO.Interop, Version=2.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Raspberry.IO.GeneralPurpose.2.4\lib\net40\Raspberry.IO.Interop.dll</HintPath>
     </Reference>
     <Reference Include="Raspberry.System, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Raspberry.System.2.1\lib\net40\Raspberry.System.dll</HintPath>
-    </Reference>
-    <Reference Include="Righthand.WittyPi, Version=1.1.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\WittyPiNet.1.1.2\lib\net45\Righthand.WittyPi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -74,7 +71,6 @@
     <Compile Include="CalculatedPollution.cs" />
     <Compile Include="Services\Abstract\IAirQualityProcessor.cs" />
     <Compile Include="IoC.cs" />
-    <Compile Include="IoCRegistrar.cs" />
     <Compile Include="Services\Implementation\AirQualityProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Abstract\IAirQualityService.cs" />
@@ -89,6 +85,7 @@
     <Compile Include="Services\Implementation\AirQualityPersisted.cs" />
     <Compile Include="Services\Implementation\AirQualityService.cs" />
     <Compile Include="Services\Implementation\Arso\ArsoService.cs" />
+    <Compile Include="Services\Implementation\FakeShiftRegister.cs" />
     <Compile Include="Services\Implementation\ShiftRegister.cs" />
     <Compile Include="Services\Implementation\TwitterPush.cs" />
     <Compile Include="UploadResponse.cs" />

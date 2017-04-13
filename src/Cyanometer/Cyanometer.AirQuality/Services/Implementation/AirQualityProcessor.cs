@@ -2,7 +2,7 @@
 using Cyanometer.Core.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
-using Righthand.WittyPi;
+using Exceptionless;
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -20,20 +20,18 @@ namespace Cyanometer.AirQuality.Services.Implementation
         private readonly IFileService file;
         private readonly IAirQualityService arso;
         private readonly IShiftRegister shiftRegister;
-        private readonly IWittyPiService wittyPiService;
         private readonly IWebsiteNotificator websiteNotificator;
         private readonly IStopCheckService stopCheckService;
         private readonly ITwitterPush twitterPush;
         private readonly INtpService ntpService;
 
         public AirQualityProcessor(LoggerFactory loggerFactory, IFileService file, IAirQualityService arso, IShiftRegister shiftRegister,
-                IWittyPiService wittyPiService, IWebsiteNotificator websiteNotificator,
+                IWebsiteNotificator websiteNotificator,
                 IStopCheckService stopCheckService, ITwitterPush twitterPush, INtpService ntpService)
         {
             Contract.Requires(file != null);
             Contract.Requires(arso != null);
             Contract.Requires(shiftRegister != null);
-            Contract.Requires(wittyPiService != null);
             Contract.Requires(websiteNotificator != null, "websiteNotificator is null.");
             Contract.Requires(stopCheckService != null, "stopCheckService is null.");
             Contract.Requires(twitterPush != null, "tweeterPush is null.");
@@ -43,7 +41,6 @@ namespace Cyanometer.AirQuality.Services.Implementation
             this.file = file;
             this.arso = arso;
             this.shiftRegister = shiftRegister;
-            this.wittyPiService = wittyPiService;
             this.websiteNotificator = websiteNotificator;
             this.stopCheckService = stopCheckService;
             this.twitterPush = twitterPush;
@@ -69,6 +66,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
                 logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Creating new state state").Commit();
                 state = new AirQualityPersisted();
             }
+            DateTime? latestDate = state.NewestDate;
             var data = await arso.GetIndexAsync(ct);
             arso.UpdatePersisted(data, state);
             XElement element = arso.PersistedToXElement(state);
@@ -78,8 +76,9 @@ namespace Cyanometer.AirQuality.Services.Implementation
             var calculatedPollution = CalculateMaxPollution(pollutions);
             AirPollution pollution = calculatedPollution.Pollution;
             Measurement chief = GetChiefPolluter(pollutions);
+            string pollutionInfo = $"Max pollution is {pollution} with index {calculatedPollution.Index:0} comming from {chief}";
             logger.LogInfo().WithCategory(LogCategory.AirQuality)
-                .WithMessage($"Max pollution is {pollution} with index {calculatedPollution.Index:0} comming from {chief}").Commit();
+                .WithMessage(pollutionInfo).Commit();
             Lights light = PollutionToLights(pollution);
             if (pollution != AirPollution.Low)
             {
@@ -87,19 +86,26 @@ namespace Cyanometer.AirQuality.Services.Implementation
             }
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calculated pollution is {pollution} using light {light}").Commit();
             DateTime? newestDate = state.NewestDate;
-            var uploadResult = await websiteNotificator.NotifyAirQualityMeasurementAsync((int)calculatedPollution.Pollution + 1, chief, newestDate.Value, ct);
-            if (uploadResult.IsSuccess)
+            if (newestDate.HasValue && (!latestDate.HasValue || newestDate.Value > latestDate.Value))
             {
-                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Notification was successful: {uploadResult.Message}").Commit();
+                var uploadResult = await websiteNotificator.NotifyAirQualityMeasurementAsync((int)calculatedPollution.Pollution + 1, chief, newestDate.Value, ct);
+                if (uploadResult.IsSuccess)
+                {
+                    logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Notification was successful: {uploadResult.Message}").Commit();
+                }
+                else
+                {
+                    logger.LogWarn().WithCategory(LogCategory.AirQuality).WithMessage(($"Notification failed: {uploadResult.Message}")).Commit();
+                }
             }
             else
             {
-                logger.LogWarn().WithCategory(LogCategory.AirQuality).WithMessage(($"Notification failed: {uploadResult.Message}")).Commit();
+                logger.LogInfo().WithCategory(LogCategory.AirQuality)
+                    .WithMessage($"No notification since newest date ({newestDate}) isn't newer compared to latest {latestDate}").Commit();
             }
-#if !WINDOWS
             shiftRegister.EnableLight(light);
-#endif
             await twitterPush.PushAsync(pollution, chief, state.NewestDate ?? DateTime.MinValue, ct);
+            ExceptionlessClient.Default.SubmitLog(nameof(AirQualityProcessor), pollutionInfo, Exceptionless.Logging.LogLevel.Info);
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("ARSO processor done").Commit();
             return true;
         }

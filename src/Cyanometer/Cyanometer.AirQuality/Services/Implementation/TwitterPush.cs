@@ -27,6 +27,10 @@ namespace Cyanometer.AirQuality.Services.Implementation
 
         public async Task PushAsync(AirPollution pollution, Measurement chief, DateTime date, CancellationToken ct)
         {
+            if (!settings.IsTwitterEnabled)
+            {
+                return;
+            }
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Updating twitter").Commit();
             try
             {

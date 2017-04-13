@@ -256,5 +256,23 @@ namespace Cyanometer.Manager.Properties {
                 return ((bool)(this["IsTwitterEnabled"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseFakeRaspberry {
+            get {
+                return ((bool)(this["UseFakeRaspberry"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UseFakeS3Uploader {
+            get {
+                return ((bool)(this["UseFakeS3Uploader"]));
+            }
+        }
     }
 }

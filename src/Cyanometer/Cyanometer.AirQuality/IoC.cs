@@ -1,17 +1,21 @@
 ﻿using Autofac;
 using Cyanometer.AirQuality.Services.Abstract;
 using Cyanometer.AirQuality.Services.Implementation;
-using Righthand.WittyPi;
 
 namespace Cyanometer.AirQuality
 {
     public static class IoC
     {
-        public static void Register(AirQualitySource airQualitySource)
+        public static void Register(bool useFakeRaspberryService, AirQualitySource airQualitySource, ContainerBuilder builder)
         {
-            ContainerBuilder builder = new ContainerBuilder();
-            builder.RegisterType<ShiftRegister>().As<IShiftRegister>();
-            builder.RegisterType<WittyPiService>().As<IWittyPiService>();
+            if (useFakeRaspberryService)
+            {
+                builder.RegisterType<FakeShiftRegister>().As<IShiftRegister>();
+            }
+            else
+            {
+                builder.RegisterType<ShiftRegister>().As<IShiftRegister>();
+            }
             switch (airQualitySource)
             {
                 case AirQualitySource.Arso:
@@ -19,7 +23,7 @@ namespace Cyanometer.AirQuality
                     break;
             }
             builder.RegisterType<TwitterPush>().As<ITwitterPush>();
-            IoCRegistrar.BuildContainer(builder);
+            builder.RegisterType<AirQualityProcessor>().As<IAirQualityProcessor>();
         }
     }
 }

@@ -4,6 +4,7 @@ using Autofac.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Implementation;
 using Cyanometer.Core.Services.Logging;
+using Righthand.WittyPi;
 using System;
 using System.Diagnostics;
 
@@ -38,14 +39,23 @@ namespace Cyanometer.Core
             return Container.ResolveKeyed<T>(serviceKey);
         }
 
-        public static void Register(ContainerBuilder builder)
+        public static void Register(bool useFakeRaspberryService, ContainerBuilder builder)
         {
             builder.RegisterType<DaylightManager>().As<IDaylightManager>().SingleInstance();
             builder.RegisterType<FileService>().As<IFileService>().SingleInstance();
             builder.RegisterType<S3UploaderService>().As<IUploaderService>();
             builder.RegisterType<FileService>().As<IFileService>();
             builder.RegisterType<WebsiteNotificator>().As<IWebsiteNotificator>();
-            builder.RegisterType<RaspberryService>().As<IRaspberryService>();
+            if (useFakeRaspberryService)
+            {
+                builder.RegisterType<FakeRaspberryService>().As<IRaspberryService>();
+                builder.RegisterType<FakeWittyPiService>().As<IWittyPiService>();
+            }
+            else
+            {
+                builder.RegisterType<RaspberryService>().As<IRaspberryService>();
+                builder.RegisterType<WittyPiService>().As<IWittyPiService>();
+            }
             builder.RegisterGeneratedFactory<LoggerFactory>(new TypedService(typeof(ILogger)));
             builder.RegisterType<StopCheckService>().As<IStopCheckService>();
             builder.RegisterType<NtpService>().As<INtpService>();

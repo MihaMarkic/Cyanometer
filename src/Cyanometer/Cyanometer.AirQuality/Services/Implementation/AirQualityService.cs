@@ -29,6 +29,11 @@ namespace Cyanometer.AirQuality.Services.Implementation
         {
             try
             {
+                // special case for ARSO
+                if (string.Equals(element.Value, "<0.1", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return 0;
+                }
                 return element == null ? (double?)null : double.Parse(element.Value, CultureInfo.InvariantCulture);
             }
             catch (Exception ex)

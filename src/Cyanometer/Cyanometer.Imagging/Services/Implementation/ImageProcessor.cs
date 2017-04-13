@@ -3,6 +3,7 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 using Cyanometer.SkyCalculator.Services.Abstract;
+using Exceptionless;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -77,9 +78,11 @@ namespace Cyanometer.Imagging.Services.Implementation
                         logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor is {factor.Index}").Commit();
                         await fileService.WriteFileAsync(factorFileName, $"{factor.Index}\n{now.ToString(CultureInfo.InvariantCulture)}", ct);
                         logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor written to {Path.GetFileName(factorFileName)}").Commit();
+                        return; 
 
                         await bigPhoto;
                         await UploadGroupAsync(indexFileName, imageName, ct);
+                        ExceptionlessClient.Default.SubmitLog(nameof(ImageProcessor), $"Image processor calculated blueness to {factor.Index}", Exceptionless.Logging.LogLevel.Info);
                     }
                     catch (Exception ex)
                     {
@@ -181,14 +184,14 @@ namespace Cyanometer.Imagging.Services.Implementation
                         await fileService.WriteFileAsync(factorFileName, index.ToString(), ct);
                         factorFileExists = true;
                     }
-                    await UploadAndDeleteAsync(smallFileName, index, ct);
+                    await UploadAndDeleteAsync(photoDate.Value, smallFileName, index, ct);
                 }
                 if (largeFileExists)
                 {
                     logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Uploading large file {Path.GetFileName(largeFileName)}").Commit();
-                    await uploader.UploadAsync(largeFileName, index, ct);
+                    string imageUrl = await uploader.UploadAsync(photoDate.Value, largeFileName, index, ct);
                     logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Large file {Path.GetFileName(largeFileName)} uploaded").Commit();
-                    var result = await webSiteNotificator.NotifyAsync($"https://s3.eu-central-1.amazonaws.com/cyanometer/{Path.GetFileName(largeFileName)}", index, photoDate.Value, ct);
+                    var result = await webSiteNotificator.NotifyAsync(imageUrl, index, photoDate.Value, ct);
                     if (result.IsSuccess)
                     {
                         logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Notification was successful: {result.Message}").Commit();
@@ -219,10 +222,10 @@ namespace Cyanometer.Imagging.Services.Implementation
             }
         }
 
-        public async Task UploadAndDeleteAsync(string filename, int? index, CancellationToken ct)
+        public async Task UploadAndDeleteAsync(DateTime photoDate, string filename, int? index, CancellationToken ct)
         {
             logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Uploading {Path.GetFileName(filename)}").Commit();
-            await uploader.UploadAsync(filename, index, ct);
+            await uploader.UploadAsync(photoDate, filename, index, ct);
             logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Deleting file").Commit();
             fileService.Delete(filename);
         }

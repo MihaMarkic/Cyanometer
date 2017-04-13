@@ -14,12 +14,28 @@ namespace Cyanometer.Core.Services.Implementation
     public class WebsiteNotificator : IWebsiteNotificator
     {
         private readonly ILogger logger;
-        public WebsiteNotificator(LoggerFactory loggerFactory)
+        private readonly ISettings settings;
+        public WebsiteNotificator(LoggerFactory loggerFactory, ISettings settings)
         {
             logger = loggerFactory(nameof(WebsiteNotificator));
+            this.settings = settings;
         }
 
-        public class Content
+        public static RestClient CreateClient()
+        {
+            var client = new RestClient("https://cyanometer-staging.herokuapp.com/");
+            return client;
+        }
+
+        public static RestRequest CreateRequest(string url, Method method, string token)
+        {
+            var request = new RestRequest(url, method);
+            request.AddHeader("Content-Type", "application/json");
+            request.AddHeader("Authorization", $"Bearer {token}");
+            return request;
+        }
+
+        public class RequestImage
         {
             [JsonProperty(PropertyName = "s3_url")]
             public string s3_url { get; set; }
@@ -27,53 +43,34 @@ namespace Cyanometer.Core.Services.Implementation
             public DateTime taken_at { get; set; }
             [JsonProperty(PropertyName = "blueness_index")]
             public string blueness_index { get; set; }
+            [JsonProperty(PropertyName = "location_id")]
+            public int location_id { get; set; }
         }
         public Task<UploadResponse> NotifyAsync(string url, int factor, DateTime date, CancellationToken ct)
         {
-            var requestBody = new Content
+            var image = new RequestImage
             {
                 s3_url = url,
                 taken_at = date,
-                blueness_index = factor.ToString()
+                blueness_index = factor.ToString(),
+                location_id = settings.LocationId
             };
 
-            //HttpClient client = new HttpClient
-            //{
-            //    BaseAddress = new Uri("http://cyanometer.herokuapp.com/")
-            //};
-            //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            string content = JsonConvert.SerializeObject(requestBody);
-            //var stringContent = new StringContent(content, encoding: Encoding.UTF8, mediaType: "application/json");
-            //var response = await client.PostAsync("api/images", stringContent);
-            //if (!response.IsSuccessStatusCode)
-            //{
-            //    throw new Exception($"Sending request failed: {response.StatusCode}/{response.ReasonPhrase}");
-            //}
-            //var result = JsonConvert.DeserializeObject<Response>(await response.Content.ReadAsStringAsync());
-
-            //var api = RestService.For<IWebServer>("http://cyanometer.herokuapp.com");
-            //var result = await api.Notify(content);
-
-            var client = new RestClient("http://cyanometer.herokuapp.com/");
-            var request = new RestRequest("api/images", Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddJsonBody(requestBody);
+            var client = CreateClient();
+            var request = CreateRequest($"/api/locations/{settings.LocationId}/images", Method.POST, settings.JwtToken);
+            request.AddJsonBody(new { image = image });
 
             logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Requesting to S3").Commit();
             var response = client.Execute(request);
-            logger.LogInfo().WithCategory(LogCategory.System).WithMessage($"Response content is null {response?.Content == null}").Commit();
-            var result = JsonConvert.DeserializeObject<Response>(response.Content);
-            var value = new UploadResponse
+            logger.LogInfo().WithCategory(LogCategory.System).WithMessage($"Response status is {response.StatusCode}").Commit();
+            var value = new UploadResponse();
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                IsSuccess = string.Equals(result.Status, "ok", StringComparison.Ordinal)
-            };
-            if (value.IsSuccess)
-            {
-                value.Message = result.Message;
+                value.IsSuccess = true;
             }
             else
             {
-                value.Message = string.Join(",", result.Detail?.Select(d => d.Detail));
+                value = new UploadResponse { IsSuccess = false, Message = response.Content };
             }
             return Task.FromResult( value);
         }
@@ -104,24 +101,19 @@ namespace Cyanometer.Core.Services.Implementation
 
             string content = JsonConvert.SerializeObject(requestBody);
 
-            var client = new RestClient("http://cyanometer.herokuapp.com/");
-            var request = new RestRequest("api/environmental_datas", Method.POST);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddJsonBody(requestBody);
+            var client = CreateClient();
+            var request = CreateRequest("api/environmental_data", Method.POST, settings.JwtToken);
+            request.AddJsonBody(new { environmental_data = requestBody });
 
             var response = client.Execute(request);
-            var result = JsonConvert.DeserializeObject<Response>(response.Content);
-            var value = new UploadResponse
+            var value = new UploadResponse();
+            if (response.StatusCode == System.Net.HttpStatusCode.Created)
             {
-                IsSuccess = string.Equals(result.Status, "ok", StringComparison.Ordinal)
-            };
-            if (value.IsSuccess)
-            {
-                value.Message = result.Message;
+                value.IsSuccess = true;
             }
             else
             {
-                value.Message = string.Join(",", result.Detail?.Select(d => d.Detail));
+                value = new UploadResponse { IsSuccess = false, Message = response.Content };
             }
             return Task.FromResult(value);
         }

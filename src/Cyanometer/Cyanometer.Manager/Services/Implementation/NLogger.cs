@@ -17,7 +17,7 @@ namespace Cyanometer.Manager.Services.Implementation
         {
             Contract.Requires(settings != null, nameof(settings) + " is null.");
             this.settings = settings;
-            logger = NLog.LogManager.GetLogger("Default logger");
+            logger = NLog.LogManager.GetLogger(className);
         }
 
         private NLog.LogLevel ToNLogLevel(LogLevel level)
@@ -43,6 +43,29 @@ namespace Cyanometer.Manager.Services.Implementation
             }
         }
 
+        private Exceptionless.Logging.LogLevel ToExceptionlessLevel(LogLevel level)
+        {
+            switch (level)
+            {
+                case LogLevel.Debug:
+                    return Exceptionless.Logging.LogLevel.Debug;
+                case LogLevel.Error:
+                    return Exceptionless.Logging.LogLevel.Error;
+                case LogLevel.Fatal:
+                    return Exceptionless.Logging.LogLevel.Fatal;
+                case LogLevel.Info:
+                    return Exceptionless.Logging.LogLevel.Info;
+                case LogLevel.Off:
+                    return Exceptionless.Logging.LogLevel.Off;
+                case LogLevel.Trace:
+                    return Exceptionless.Logging.LogLevel.Trace;
+                case LogLevel.Warn:
+                    return Exceptionless.Logging.LogLevel.Warn;
+                default:
+                    throw new Exception("Invalid log level: " + level);
+            }
+        }
+
         public override void LogCore(LogItem item)
         {
             NLog.LogLevel nlogLogLevel = ToNLogLevel(item.Level);
@@ -54,6 +77,7 @@ namespace Cyanometer.Manager.Services.Implementation
             logItem.Message = item.Message?.ToString();
             logItem.Properties[CategoryContext] = item.Category;
             logItem.Exception = item.Exception;
+            logItem.LoggerName = logger.Name;
             if (item.Properties != null)
             {
                 foreach (var pair in item.Properties)
@@ -67,15 +91,9 @@ namespace Cyanometer.Manager.Services.Implementation
                 var except = logItem.Exception.ToExceptionless();
                 except.Submit();
             }
-            else if (item.Level == LogLevel.Error || item.Level == LogLevel.Warn || item.Level == LogLevel.Info || item.Level == LogLevel.Fatal)
+            else if (item.Level == LogLevel.Error || item.Level == LogLevel.Warn || item.Level == LogLevel.Fatal || item.Level == LogLevel.Info)
             {
-                var ev = new Event
-                {
-                    Message = logItem.Message
-                };
-                ev.Data.Add(Event.KnownDataKeys.Level, item.Level);
-                ev.Data.Add("@category", item.Category);
-                ExceptionlessClient.Default.SubmitEvent(ev);
+                ExceptionlessClient.Default.SubmitLog(item.Category, logItem.Message, ToExceptionlessLevel(item.Level));
             }
             OutputToConsole(item);
         }

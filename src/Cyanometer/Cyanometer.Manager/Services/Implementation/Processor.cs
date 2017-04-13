@@ -1,8 +1,10 @@
-﻿using Cyanometer.Core.Core;
+﻿using Cyanometer.AirQuality.Services.Abstract;
+using Cyanometer.Core.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 using Cyanometer.Manager.Services.Abstract;
+using Exceptionless;
 using Righthand.WittyPi;
 using System;
 using System.Collections.Generic;
@@ -20,10 +22,11 @@ namespace Cyanometer.Manager.Services.Implementation
         private readonly IWittyPiService wittyPiService;
         private readonly INtpService ntpService;
         private readonly IStopCheckService stopCheckService;
-        private static CancellationTokenSource cts;
+        private readonly IAirQualityProcessor airQualityProcessor;
+        private CancellationTokenSource cts;
 
         public Processor(LoggerFactory loggerFactory, ISettings settings, IImageProcessor imageProcessor, IWittyPiService wittyPiService,
-            INtpService ntpService, IStopCheckService stopCheckService)
+            INtpService ntpService, IStopCheckService stopCheckService, IAirQualityProcessor airQualityProcessor)
         {
             this.logger = loggerFactory(nameof(Processor));
             this.settings = settings;
@@ -31,6 +34,7 @@ namespace Cyanometer.Manager.Services.Implementation
             this.wittyPiService = wittyPiService;
             this.ntpService = ntpService;
             this.stopCheckService = stopCheckService;
+            this.airQualityProcessor = airQualityProcessor;
         }
         public void Process()
         {
@@ -55,7 +59,27 @@ namespace Cyanometer.Manager.Services.Implementation
             }
             PrepareForLoopAsync(ct).Wait(ct);
             DateTime now = DateTime.Now;
-            Loop(ct);
+            bool shouldLoop = settings.CycleWaitMinutes > 0;
+            do
+            {
+                Loop(ct);
+                var delay = new TimeSpan(0, settings.CycleWaitMinutes, 0) - (DateTime.Now - now);
+                if (shouldLoop)
+                {
+                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Will cycle wait for {delay}").Commit();
+                    if (delay.TotalSeconds > 0)
+                    {
+                        Task.Delay(delay, ct).Wait(ct);
+                    }
+                }
+            } while (shouldLoop);
+
+            if (settings.ExceptionlessEnabled)
+            {
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Flushing Exceptionless").Commit();
+                ExceptionlessClient.Default.ProcessQueue();
+            }
+            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("All done, exiting").Commit();
         }
 
         public async Task PrepareForLoopAsync(CancellationToken ct)
@@ -93,11 +117,18 @@ namespace Cyanometer.Manager.Services.Implementation
         {
             var loops = new List<Task>(2);
             DateTime start = DateTime.Now;
-            var canShutdownTask = stopCheckService.CanShutdownAsync(ct);
+            Task<bool> canShutdownTask = settings.SleepMinutes > 0 ? stopCheckService.CanShutdownAsync(ct): null;
             if (settings.ProcessImages)
             {
                 var imageProcessorTask = imageProcessor.LoopAsync(ct);
                 loops.Add(imageProcessorTask);
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Image processing is enabled").Commit();
+            }
+            if (settings.ProcessAirQuality)
+            {
+                var airQualityProcessorTask = airQualityProcessor.LoopAsync(ct);
+                loops.Add(airQualityProcessorTask);
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("AirQuality processing is enabled").Commit();
             }
             try
             {
@@ -111,8 +142,8 @@ namespace Cyanometer.Manager.Services.Implementation
             {
                 logger.LogError().WithCategory(LogCategory.Manager).WithMessage("General failure").WithException(ex).Commit();
             }
-            bool canShutdown = canShutdownTask.Result;
-            if (settings.SleepMinutes > 0)
+            bool canShutdown = canShutdownTask?.Result ?? false;
+            if (canShutdown && settings.SleepMinutes > 0)
             {
                 SystemSleepAsync(start, ct).Wait(ct);
             }
