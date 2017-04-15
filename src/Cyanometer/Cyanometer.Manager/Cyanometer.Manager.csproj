@@ -7,7 +7,7 @@
     <ProjectGuid>{7CCF6F64-21DC-4793-842A-A9FC642687A8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Cyanometer.Manager</RootNamespace>
-    <AssemblyName>Cyanometer</AssemblyName>
+    <AssemblyName>cyanometer</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -37,9 +37,6 @@
   <ItemGroup>
     <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.4.5\lib\net45\NLog.dll</HintPath>
@@ -66,16 +63,8 @@
       <HintPath>..\packages\WittyPiNet.1.1.2\lib\net45\Righthand.WittyPi.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
     <Reference Include="UnixSignalWaiter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\UnixSignalWaiter.0.0.1\lib\UnixSignalWaiter.dll</HintPath>
     </Reference>
@@ -98,7 +87,6 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="applicationSettings.config" />
-    <None Include="applicationSettings.test.config" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -110,7 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cyanometer.AirQuality\Cyanometer.AirQuality.csproj">
-      <Project>{66FEFC95-3793-4738-907D-860D0F87AC26}</Project>
+      <Project>{66fefc95-3793-4738-907d-860d0f87ac26}</Project>
       <Name>Cyanometer.AirQuality</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyanometer.Core\Cyanometer.Core.csproj">
@@ -118,17 +106,23 @@
       <Name>Cyanometer.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyanometer.Imagging\Cyanometer.Imagging.csproj">
-      <Project>{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}</Project>
+      <Project>{f2c3c9d7-1f87-47eb-b008-849fff792bde}</Project>
       <Name>Cyanometer.Imagging</Name>
     </ProjectReference>
     <ProjectReference Include="..\Cyanometer.SkyCalculator\Cyanometer.SkyCalculator.csproj">
       <Project>{b30e7826-8f62-4186-98bc-8cf5ed6f38c1}</Project>
       <Name>Cyanometer.SkyCalculator</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Exceptionless\src\Exceptionless\Exceptionless.csproj">
+      <Project>{dea761d6-46b1-497f-b8ec-914847e49917}</Project>
+      <Name>Exceptionless</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>copy "$(ProjectDir)applicationSettings.test.config" "$(TargetDir)applicationSettings.config"
-copy "$(SolutionDir)Data\SloveneDaylight.xml" "$(TargetDir)daylight.xml"</PreBuildEvent>
+    <PreBuildEvent>if $(ConfigurationName) == Debug (
+copy "$(SolutionDir)Data\applicationSettings.test.config" "$(TargetDir)applicationSettings.config"
+copy "$(SolutionDir)Data\daylight.test.xml" "$(TargetDir)daylight.xml"
+)</PreBuildEvent>
   </PropertyGroup>
 </Project>

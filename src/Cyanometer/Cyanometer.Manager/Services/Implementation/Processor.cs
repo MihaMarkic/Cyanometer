@@ -4,7 +4,7 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 using Cyanometer.Manager.Services.Abstract;
-//using Exceptionless;
+using Exceptionless;
 using Righthand.WittyPi;
 using System;
 using System.Collections.Generic;
@@ -57,27 +57,34 @@ namespace Cyanometer.Manager.Services.Implementation
                     logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Received SIGTERM").Commit();
                 }, ct, TaskCreationOptions.LongRunning);
             }
-            PrepareForLoopAsync(ct).Wait(ct);
-            DateTime now = DateTime.Now;
-            bool shouldLoop = settings.CycleWaitMinutes > 0;
-            do
+            try
             {
-                Loop(ct);
-                var delay = new TimeSpan(0, settings.CycleWaitMinutes, 0) - (DateTime.Now - now);
-                if (shouldLoop)
+                PrepareForLoopAsync(ct).Wait(ct);
+                DateTime now = DateTime.Now;
+                bool shouldLoop = settings.CycleWaitMinutes > 0;
+                do
                 {
-                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Will cycle wait for {delay}").Commit();
-                    if (delay.TotalSeconds > 0)
+                    Loop(ct);
+                    var delay = new TimeSpan(0, settings.CycleWaitMinutes, 0) - (DateTime.Now - now);
+                    if (shouldLoop)
                     {
-                        Task.Delay(delay, ct).Wait(ct);
+                        logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Will cycle wait for {delay}").Commit();
+                        if (delay.TotalSeconds > 0)
+                        {
+                            Task.Delay(delay, ct).Wait(ct);
+                        }
                     }
-                }
-            } while (shouldLoop);
+                } while (shouldLoop);
+            }
+            catch (OperationCanceledException)
+            {
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Gracefully exiting loop due to cancellation").Commit();
+            }
 
             if (settings.ExceptionlessEnabled)
             {
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Flushing Exceptionless").Commit();
-                //ExceptionlessClient.Default.ProcessQueue();
+                ExceptionlessClient.Default.ProcessQueue();
             }
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("All done, exiting").Commit();
         }
@@ -117,7 +124,7 @@ namespace Cyanometer.Manager.Services.Implementation
         {
             var loops = new List<Task>(2);
             DateTime start = DateTime.Now;
-            Task<bool> canShutdownTask = settings.SleepMinutes > 0 ? stopCheckService.CanShutdownAsync(ct): null;
+            Task<bool> canShutdownTask = settings.SleepMinutes > 0 ? stopCheckService.CanShutdownAsync(ct) : null;
             if (settings.ProcessImages)
             {
                 var imageProcessorTask = imageProcessor.LoopAsync(ct);
@@ -155,13 +162,15 @@ namespace Cyanometer.Manager.Services.Implementation
             DateTime wakeUpTime = start.AddMinutes(settings.SleepMinutes);
             DateTime now = DateTime.Now;
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC: {now}, wakup at {wakeUpTime}").Commit();
-            await Retrier.RetryAsync(() => {
+            await Retrier.RetryAsync(() =>
+            {
                 wittyPiService.WakeUp = WakeUpDateTime.Hourly((byte)wakeUpTime.Minute, (byte)wakeUpTime.Second);
             }, logger, 5, "Setting wakeup", true, ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Shutting down").Commit();
             var sleep = now.AddSeconds(100);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Going to sleep in 100 secs at {sleep}").Commit();
-            await Retrier.RetryAsync(() => {
+            await Retrier.RetryAsync(() =>
+            {
                 wittyPiService.Sleep = new SleepDateTime((byte)sleep.Day, (byte)sleep.Hour, (byte)sleep.Minute);
             }, logger, 5, "Setting sleep", true, ct);
         }
