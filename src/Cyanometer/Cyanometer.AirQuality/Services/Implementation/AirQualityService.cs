@@ -2,12 +2,9 @@
 using Cyanometer.AirQuality.Services.Implementation.Arso;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
+using RestSharp;
 using System;
 using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Cyanometer.AirQuality.Services.Implementation
@@ -16,11 +13,11 @@ namespace Cyanometer.AirQuality.Services.Implementation
     {
         protected readonly ILogger logger;
         protected readonly IAirQualitySettings settings;
-        protected readonly HttpClient client;
-        public AirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings)
+        protected readonly RestClient client;
+        public AirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings, string baseUrl)
         {
             logger = loggerFactory(nameof(AirQualityService));
-            client = new HttpClient();
+            client = new RestClient(baseUrl);
             this.settings = settings;
         }
         
@@ -29,12 +26,16 @@ namespace Cyanometer.AirQuality.Services.Implementation
         {
             try
             {
+                if (element?.Value == null)
+                {
+                    return null;
+                }
                 // special case for ARSO
-                if (string.Equals(element.Value, "<0.1", StringComparison.InvariantCultureIgnoreCase))
+                if (element.Value.StartsWith("<", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return 0;
                 }
-                return element == null ? (double?)null : double.Parse(element.Value, CultureInfo.InvariantCulture);
+                return double.Parse(element.Value, CultureInfo.InvariantCulture);
             }
             catch (Exception ex)
             {

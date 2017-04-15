@@ -4,7 +4,7 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 using Cyanometer.Manager.Services.Abstract;
-using Exceptionless;
+//using Exceptionless;
 using Righthand.WittyPi;
 using System;
 using System.Collections.Generic;
@@ -77,7 +77,7 @@ namespace Cyanometer.Manager.Services.Implementation
             if (settings.ExceptionlessEnabled)
             {
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Flushing Exceptionless").Commit();
-                ExceptionlessClient.Default.ProcessQueue();
+                //ExceptionlessClient.Default.ProcessQueue();
             }
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("All done, exiting").Commit();
         }

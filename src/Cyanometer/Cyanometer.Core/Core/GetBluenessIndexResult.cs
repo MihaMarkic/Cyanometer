@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 
 namespace Cyanometer.Core.Core
 {
@@ -8,6 +7,6 @@ namespace Cyanometer.Core.Core
     {
         public int Index { get; set; }
         public double Percentage { get; set; }
-        public ImmutableList<int> Indexes { get; set; }
+        public int[] Indexes { get; set; }
     }
 }

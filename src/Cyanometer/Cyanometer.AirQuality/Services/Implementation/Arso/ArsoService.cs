@@ -2,10 +2,11 @@
 using Cyanometer.AirQuality.Services.Implementation.Arso;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
+using RestSharp;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -14,8 +15,8 @@ namespace Cyanometer.AirQuality.Services.Implementation
 {
     public class ArsoService : AirQualityService, IAirQualityService
     {
-        private const string Url = "http://www.arso.gov.si/xml/zrak/ones_zrak_urni_podatki_zadnji.xml";
-        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings): base(loggerFactory, settings)
+        private const string Url = "ones_zrak_urni_podatki_zadnji.xml";
+        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings): base(loggerFactory, settings, "http://www.arso.gov.si/xml/zrak/")
         {
         }
         public async Task<AirQualityData> GetIndexAsync(CancellationToken ct)
@@ -64,10 +65,12 @@ namespace Cyanometer.AirQuality.Services.Implementation
             return result;
         }
 
-        public async Task<XDocument> GetDataAsync(HttpClient client, CancellationToken ct)
+        public async Task<XDocument> GetDataAsync(IRestClient client, CancellationToken ct)
         {
-            var stream = await client.GetStreamAsync(Url);
-            XDocument doc = XDocument.Load(stream);
+            var request = new RestRequest(Url, Method.GET);
+            var response = await client.ExecuteTaskAsync(request, ct);
+            var stringReader = new StringReader(response.Content);
+            XDocument doc = XDocument.Load(stringReader);
             return doc;
         }
     }

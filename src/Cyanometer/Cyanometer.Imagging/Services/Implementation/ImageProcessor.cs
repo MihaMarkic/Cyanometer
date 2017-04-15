@@ -3,7 +3,7 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 using Cyanometer.SkyCalculator.Services.Abstract;
-using Exceptionless;
+//using Exceptionless;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -78,11 +78,10 @@ namespace Cyanometer.Imagging.Services.Implementation
                         logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor is {factor.Index}").Commit();
                         await fileService.WriteFileAsync(factorFileName, $"{factor.Index}\n{now.ToString(CultureInfo.InvariantCulture)}", ct);
                         logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Factor written to {Path.GetFileName(factorFileName)}").Commit();
-                        return; 
 
                         await bigPhoto;
                         await UploadGroupAsync(indexFileName, imageName, ct);
-                        ExceptionlessClient.Default.SubmitLog(nameof(ImageProcessor), $"Image processor calculated blueness to {factor.Index}", Exceptionless.Logging.LogLevel.Info);
+                        //ExceptionlessClient.Default.SubmitLog(nameof(ImageProcessor), $"Image processor calculated blueness to {factor.Index}", Exceptionless.Logging.LogLevel.Info);
                     }
                     catch (Exception ex)
                     {

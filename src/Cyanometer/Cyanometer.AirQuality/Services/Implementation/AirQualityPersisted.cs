@@ -23,7 +23,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
         {
             get
             {
-                return AllValues().Where(v => v != null && v.LastDate != null).Select(v => v.LastDate).Max();
+                return AllValues().Where(v => v != null && v.LastDate != null).Select(v => (DateTime?)v.LastDate).Max();
             }
         }
         public DateTime? OldestDate

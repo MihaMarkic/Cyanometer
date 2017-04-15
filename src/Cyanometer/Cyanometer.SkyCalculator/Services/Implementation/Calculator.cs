@@ -3,7 +3,6 @@ using Cyanometer.SkyCalculator.Services.Abstract;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,7 +12,7 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
     {
         public const int DefaultIndexOrientation = 25;
         private readonly IColorCalculator colorCalculator;
-        public static ImmutableList<int> ColorValues = ImmutableList<int>.Empty.AddRange(
+        public static int[] ColorValues = 
             new int[] {
                 0xF4FBFE,
                 0xF5FAFC,
@@ -68,8 +67,7 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
                 0x18232E,
                 0x171F29,
                 0x101822
-            }
-        );
+            };
         public Calculator(IColorCalculator colorCalculator)
         {
             this.colorCalculator = colorCalculator;
@@ -80,7 +78,7 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
         }
         public GetBluenessIndexResult GetBluenessIndexTopPixels(IList<Color> image, int pixelsCount, int orientation)
         {
-            ImmutableList<Color> colors = ColorValues.Select(c => Color.FromHex(c)).ToImmutableList();
+            Color[] colors = ColorValues.Select(c => Color.FromHex(c)).ToArray();
             BlockingCollection<int> result = new BlockingCollection<int>();
             colorCalculator.Init(colors);
 
@@ -91,7 +89,7 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
                     for (int i = range.Item1; i < range.Item2; i++)
                     {
                         Color nearest = colorCalculator.CalculateNearest(image[i]);
-                        result.Add(colors.IndexOf(nearest));
+                        result.Add(Array.IndexOf(colors, nearest));
                     }
                 });
 
@@ -101,7 +99,7 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
             return new GetBluenessIndexResult
             {
                 Index = Convert.ToInt32(Math.Round(index, MidpointRounding.AwayFromZero)),
-                Indexes = result.ToImmutableList()
+                Indexes = result.ToArray()
             };
         }
     }

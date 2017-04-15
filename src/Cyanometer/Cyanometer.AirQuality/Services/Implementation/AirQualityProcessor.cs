@@ -2,7 +2,7 @@
 using Cyanometer.Core.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
-using Exceptionless;
+//using Exceptionless;
 using System;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -105,7 +105,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             }
             shiftRegister.EnableLight(light);
             await twitterPush.PushAsync(pollution, chief, state.NewestDate ?? DateTime.MinValue, ct);
-            ExceptionlessClient.Default.SubmitLog(nameof(AirQualityProcessor), pollutionInfo, Exceptionless.Logging.LogLevel.Info);
+            //ExceptionlessClient.Default.SubmitLog(nameof(AirQualityProcessor), pollutionInfo, Exceptionless.Logging.LogLevel.Info);
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("ARSO processor done").Commit();
             return true;
         }
