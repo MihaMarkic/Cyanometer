@@ -83,6 +83,7 @@ namespace Cyanometer.Imagging.Services.Implementation
                         await UploadGroupAsync(indexFileName, imageName, ct);
                         //ExceptionlessClient.Default.SubmitLog(nameof(ImageProcessor), $"Image processor calculated blueness to {factor.Index}", Exceptionless.Logging.LogLevel.Info);
                     }
+                    catch (OperationCanceledException) { }
                     catch (Exception ex)
                     {
                         logger.LogError().WithCategory(LogCategory.Manager).WithMessage("Error during loop").WithException(ex).Commit();

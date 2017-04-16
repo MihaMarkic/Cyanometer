@@ -60,10 +60,10 @@ namespace Cyanometer.Manager.Services.Implementation
             try
             {
                 PrepareForLoopAsync(ct).Wait(ct);
-                DateTime now = DateTime.Now;
                 bool shouldLoop = settings.CycleWaitMinutes > 0;
                 do
                 {
+                    DateTime now = DateTime.Now;
                     Loop(ct);
                     var delay = new TimeSpan(0, settings.CycleWaitMinutes, 0) - (DateTime.Now - now);
                     if (shouldLoop)
@@ -143,7 +143,8 @@ namespace Cyanometer.Manager.Services.Implementation
             }
             catch (OperationCanceledException)
             {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Processor canceled").Commit();
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Processor canceled, will exit").Commit();
+                return;
             }
             catch (Exception ex)
             {

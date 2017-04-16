@@ -41,7 +41,7 @@ namespace Cyanometer.Core.Services.Implementation
             catch (OperationCanceledException)
             {
                 logger.LogWarn().WithCategory(LogCategory.System).WithMessage($"Upload cancelled").Commit();
-                return null;
+                throw;
             }
             catch (Exception ex)
             {
