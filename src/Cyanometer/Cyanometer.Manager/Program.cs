@@ -29,13 +29,13 @@ namespace Cyanometer.Manager
             daylightManager.Load();
             var processor = IoCRegistrar.Resolve<IProcessor>();
             processor.Process();
-#if DEBUG
-            Console.WriteLine("Log is");
+            //Console.WriteLine("Exceptionless log is");
             //ExceptionlessClient.Default.ProcessQueue();
-            foreach (var l in log.GetLogEntries())
-            {
-                Console.WriteLine($"{l.Level}:{l.Message}");
-            };
+            //foreach (var l in log.GetLogEntries())
+            //{
+            //    Console.WriteLine($"{l.Level}:{l.Message}");
+            //};
+#if DEBUG
             Console.WriteLine("Press ENTER to exit");
             Console.ReadLine();
 #endif

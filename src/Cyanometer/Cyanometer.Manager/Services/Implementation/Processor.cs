@@ -93,7 +93,7 @@ namespace Cyanometer.Manager.Services.Implementation
         {
             if (settings.InitialDelay > 0)
             {
-                TimeSpan initialDelay = TimeSpan.FromSeconds(settings.InitialDelay);
+                TimeSpan initialDelay = TimeSpan.FromMinutes(settings.InitialDelay);
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Safe waiting for {initialDelay}").Commit();
                 await Task.Delay(initialDelay, ct);
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Safe waiting done").Commit();
