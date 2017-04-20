@@ -23,7 +23,7 @@ namespace Cyanometer.Core.Services.Implementation
             try
             {
                 HttpClient client = new HttpClient { BaseAddress = new Uri(settings.StopCheckUrl) };
-                var content = await client.GetStringAsync("stop.txt");
+                var content = await client.GetStringAsync($"stop-{settings.LocationId}.txt");
                 bool canShutdown = !string.Equals("mihies", content, StringComparison.Ordinal);
                 if (!canShutdown)
                 {
