@@ -11,7 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Cyanometer.AirQuality.Services.Implementation
+namespace Cyanometer.AirQuality.Services.Implementation.Specific
 {
     public class ArsoService : AirQualityService, IAirQualityService
     {

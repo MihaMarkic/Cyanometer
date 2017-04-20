@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Cyanometer.AirQuality.Services.Abstract;
 using Cyanometer.AirQuality.Services.Implementation;
+using Cyanometer.AirQuality.Services.Implementation.Specific;
 
 namespace Cyanometer.AirQuality
 {
@@ -20,6 +21,9 @@ namespace Cyanometer.AirQuality
             {
                 case AirQualitySource.Arso:
                     builder.RegisterType<ArsoService>().As<IAirQualityService>();
+                    break;
+                case AirQualitySource.WroclawPios:
+                    builder.RegisterType<WroclawPiosService>().As<IAirQualityService>();
                     break;
             }
             builder.RegisterType<TwitterPush>().As<ITwitterPush>();

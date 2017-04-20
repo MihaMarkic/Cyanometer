@@ -144,10 +144,10 @@ namespace Cyanometer.AirQuality.Services.Implementation
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calcullating pollutions").Commit();
             CalculatedPollution[] pollution = new CalculatedPollution[]
             {
-                CalculatePollution(date, Measurement.PM10, state.PM10, CalculatePM10PollutionIndex(state.PM10.Value)),
-                CalculatePollution(date, Measurement.O3, state.O3, CalculateO3PollutionIndex(state.O3.Value)),
-                CalculatePollution(date, Measurement.NO2, state.NO2, CalculateNO2PollutionIndex(state.NO2.Value)),
-                CalculatePollution(date, Measurement.SO2, state.SO2, CalculateSO2PollutionIndex(state.SO2.Value))
+                CalculatePollution(date, Measurement.PM10, state.PM10, CalculatePM10PollutionIndex(state.PM10?.Value ?? 0)),
+                CalculatePollution(date, Measurement.O3, state.O3, CalculateO3PollutionIndex(state.O3?.Value ?? 0)),
+                CalculatePollution(date, Measurement.NO2, state.NO2, CalculateNO2PollutionIndex(state.NO2?.Value ?? 0)),
+                CalculatePollution(date, Measurement.SO2, state.SO2, CalculateSO2PollutionIndex(state.SO2?.Value ?? 0))
             };
             return pollution;
         }
@@ -182,7 +182,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
 
         public CalculatedPollution CalculatePollution(DateTime measurementDate, Measurement measurement, AirQualityValue value, double? index)
         {
-            CalculatedPollution result = new CalculatedPollution { Measurement = measurement, Index = value.Value };
+            CalculatedPollution result = new CalculatedPollution { Measurement = measurement, Index = value?.Value ?? 0 };
             bool isOutdated = false;
             if (value == null || (isOutdated = (measurementDate - value.LastDate).TotalHours > 4))
             {
