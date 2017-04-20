@@ -96,13 +96,14 @@ namespace Cyanometer.Core.Services.Implementation
             {
                 air_pollution_index = index.ToString(),
                 taken_at = date,
-                icon = MeasurementToString(chief)
+                icon = MeasurementToString(chief),
+                location_id = settings.LocationId
             };
 
             string content = JsonConvert.SerializeObject(requestBody);
 
             var client = CreateClient();
-            var request = CreateRequest("api/environmental_data", Method.POST, settings.JwtToken);
+            var request = CreateRequest($"api/locations/{settings.LocationId}/environmental_data", Method.POST, settings.JwtToken);
             request.AddJsonBody(new { environmental_data = requestBody });
 
             var response = client.Execute(request);
@@ -124,6 +125,7 @@ namespace Cyanometer.Core.Services.Implementation
         public string air_pollution_index { get; set; }
         public string icon { get; set; }
         public DateTime taken_at { get; set; }
+        public int location_id { get; set; }
     }
 
     [DebuggerDisplay("{Status,nq}")]

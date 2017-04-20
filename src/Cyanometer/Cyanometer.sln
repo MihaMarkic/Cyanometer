@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.3
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Manager", "Cyanometer.Manager\Cyanometer.Manager.csproj", "{7CCF6F64-21DC-4793-842A-A9FC642687A8}"
 EndProject
@@ -9,7 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Core", "Cyanomet
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{20576742-B745-49B3-8332-EC2A18683574}"
 	ProjectSection(SolutionItems) = preProject
-		Cyanometer.Manager\applicationSettings.test.config = Cyanometer.Manager\applicationSettings.test.config
 		Data\applicationSettings.test.config = Data\applicationSettings.test.config
 		..\..\README.md = ..\..\README.md
 		Data\SloveneDaylight.xml = Data\SloveneDaylight.xml
@@ -38,18 +37,22 @@ Global
 		{7CCF6F64-21DC-4793-842A-A9FC642687A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CCF6F64-21DC-4793-842A-A9FC642687A8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FF00DB63-A7ED-47C8-8BC6-5BCDE5E41CCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF00DB63-A7ED-47C8-8BC6-5BCDE5E41CCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF00DB63-A7ED-47C8-8BC6-5BCDE5E41CCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF00DB63-A7ED-47C8-8BC6-5BCDE5E41CCB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B30E7826-8F62-4186-98BC-8CF5ED6F38C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B30E7826-8F62-4186-98BC-8CF5ED6F38C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B30E7826-8F62-4186-98BC-8CF5ED6F38C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B30E7826-8F62-4186-98BC-8CF5ED6F38C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E799852-E27E-4112-BA94-85AF55BC419E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{66FEFC95-3793-4738-907D-860D0F87AC26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66FEFC95-3793-4738-907D-860D0F87AC26}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66FEFC95-3793-4738-907D-860D0F87AC26}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66FEFC95-3793-4738-907D-860D0F87AC26}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DEA761D6-46B1-497F-B8EC-914847E49917}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
