@@ -4,8 +4,15 @@ Change password
 dist-upgrade
 enable camera (raspi-config)
 expand partition (raspi-config)
+
+## Install OpenVPN
+[How to setup OpenVPN Client](https://askubuntu.com/questions/460871/how-to-setup-openvpn-client)
+`apt-get install openvpn`  
+Test: `openvpn --config /path/to/config.ovpn`  
+Copy `.ovpn` into `/etc/openvpn` and rename it to `.conf`
+
 ## Install Mono
-[Install Mono on Linux](http://www.mono-project.com/docs/getting-started/install/linux/)
+[Install Mono on Linux](http://www.mono-project.com/docs/getting-started/install/linux/)  
 Also install `mono-vbnc`
 
 ## Change hostname
@@ -18,6 +25,6 @@ or
 `sudo reboot`  
 
 ## Install cyanometer
-Copy exe and files
-Add proper daylight.xml file
-Add proper applicationSettings.config
+Copy exe and files  
+Add proper `daylight.xml file`  
+Add proper `applicationSettings.config`  
