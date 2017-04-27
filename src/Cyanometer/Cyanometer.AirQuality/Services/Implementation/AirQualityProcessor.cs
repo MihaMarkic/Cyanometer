@@ -73,7 +73,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             var data = await arso.GetIndexAsync(ct);
             arso.UpdatePersisted(data, state);
             XElement element = arso.PersistedToXElement(state);
-            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Saving ARSO state").Commit();
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Saving air quality state").Commit();
             await file.WriteFileAsync(lastDataPath, element.ToString(), ct);
             var pollutions = CalculatePollutions(data.Date, state);
             var calculatedPollution = CalculateMaxPollution(pollutions);
@@ -123,7 +123,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
                 logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Notification upload is disabled").Commit();
             }
             //ExceptionlessClient.Default.SubmitLog(nameof(AirQualityProcessor), pollutionInfo, Exceptionless.Logging.LogLevel.Info);
-            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("ARSO processor done").Commit();
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Air quality processor done").Commit();
             return true;
         }
 
