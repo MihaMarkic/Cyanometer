@@ -24,15 +24,17 @@ namespace Cyanometer.AirQuality.Services.Implementation
         private readonly IStopCheckService stopCheckService;
         private readonly ITwitterPush twitterPush;
         private readonly INtpService ntpService;
+        private readonly IAirQualitySettings settings;
 
         public AirQualityProcessor(LoggerFactory loggerFactory, IFileService file, IAirQualityService arso, IShiftRegister shiftRegister,
-                IWebsiteNotificator websiteNotificator,
+                IWebsiteNotificator websiteNotificator, IAirQualitySettings settings,
                 IStopCheckService stopCheckService, ITwitterPush twitterPush, INtpService ntpService)
         {
             Contract.Requires(file != null);
             Contract.Requires(arso != null);
             Contract.Requires(shiftRegister != null);
             Contract.Requires(websiteNotificator != null, "websiteNotificator is null.");
+            Contract.Requires(settings != null, nameof(settings) + " is null.");
             Contract.Requires(stopCheckService != null, "stopCheckService is null.");
             Contract.Requires(twitterPush != null, "tweeterPush is null.");
             Contract.Requires(ntpService != null, "ntpService is null.");
@@ -42,6 +44,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             this.arso = arso;
             this.shiftRegister = shiftRegister;
             this.websiteNotificator = websiteNotificator;
+            this.settings = settings;
             this.stopCheckService = stopCheckService;
             this.twitterPush = twitterPush;
             this.ntpService = ntpService;
@@ -79,32 +82,46 @@ namespace Cyanometer.AirQuality.Services.Implementation
             string pollutionInfo = $"Max pollution is {pollution} with index {calculatedPollution.Index:0} comming from {chief}";
             logger.LogInfo().WithCategory(LogCategory.AirQuality)
                 .WithMessage(pollutionInfo).Commit();
-            Lights light = PollutionToLights(pollution);
-            if (pollution != AirPollution.Low)
+            if (settings.AirQualityLightsEnabled)
             {
-                light |= ChiefPolluterToLights(chief);
-            }
-            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calculated pollution is {pollution} using light {light}").Commit();
-            DateTime? newestDate = state.NewestDate;
-            if (newestDate.HasValue && (!latestDate.HasValue || newestDate.Value > latestDate.Value))
-            {
-                var uploadResult = await websiteNotificator.NotifyAirQualityMeasurementAsync((int)calculatedPollution.Pollution + 1, chief, newestDate.Value, ct);
-                if (uploadResult.IsSuccess)
+                Lights light = PollutionToLights(pollution);
+                if (pollution != AirPollution.Low)
                 {
-                    logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Notification was successful: {uploadResult.Message}").Commit();
+                    light |= ChiefPolluterToLights(chief);
                 }
-                else
-                {
-                    logger.LogWarn().WithCategory(LogCategory.AirQuality).WithMessage(($"Notification failed: {uploadResult.Message}")).Commit();
-                }
+                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calculated pollution is {pollution} using light {light}").Commit();
+                shiftRegister.EnableLight(light);
             }
             else
             {
-                logger.LogInfo().WithCategory(LogCategory.AirQuality)
-                    .WithMessage($"No notification since newest date ({newestDate}) isn't newer compared to latest {latestDate}").Commit();
+                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Lights are disabled").Commit();
             }
-            shiftRegister.EnableLight(light);
-            await twitterPush.PushAsync(pollution, chief, state.NewestDate ?? DateTime.MinValue, ct);
+            DateTime? newestDate = state.NewestDate;
+            if (settings.AirQualityUploadEnabled)
+            {
+                if (newestDate.HasValue && (!latestDate.HasValue || newestDate.Value > latestDate.Value))
+                {
+                    var uploadResult = await websiteNotificator.NotifyAirQualityMeasurementAsync((int)calculatedPollution.Pollution + 1, chief, newestDate.Value, ct);
+                    if (uploadResult.IsSuccess)
+                    {
+                        logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Notification was successful: {uploadResult.Message}").Commit();
+                    }
+                    else
+                    {
+                        logger.LogWarn().WithCategory(LogCategory.AirQuality).WithMessage(($"Notification failed: {uploadResult.Message}")).Commit();
+                    }
+                }
+                else
+                {
+                    logger.LogInfo().WithCategory(LogCategory.AirQuality)
+                        .WithMessage($"No notification since newest date ({newestDate}) isn't newer compared to latest {latestDate}").Commit();
+                }
+                await twitterPush.PushAsync(pollution, chief, state.NewestDate ?? DateTime.MinValue, ct);
+            }
+            else
+            {
+                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Notification upload is disabled").Commit();
+            }
             //ExceptionlessClient.Default.SubmitLog(nameof(AirQualityProcessor), pollutionInfo, Exceptionless.Logging.LogLevel.Info);
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("ARSO processor done").Commit();
             return true;

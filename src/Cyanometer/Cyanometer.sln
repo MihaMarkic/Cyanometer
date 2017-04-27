@@ -11,7 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{20576742
 	ProjectSection(SolutionItems) = preProject
 		Data\applicationSettings.test.config = Data\applicationSettings.test.config
 		..\..\README.md = ..\..\README.md
-		Data\SloveneDaylight.xml = Data\SloveneDaylight.xml
+		Data\daylight.test.xml = Data\daylight.test.xml
+		Data\daylight.si.xml = Data\daylight.si.xml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Imagging", "Cyanometer.Imagging\Cyanometer.Imagging.csproj", "{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}"

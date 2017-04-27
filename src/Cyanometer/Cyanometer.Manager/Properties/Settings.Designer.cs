@@ -274,5 +274,23 @@ namespace Cyanometer.Manager.Properties {
                 return ((bool)(this["UseFakeS3Uploader"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AirQualityUploadEnabled {
+            get {
+                return ((bool)(this["AirQualityUploadEnabled"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AirQualityLightsEnabled {
+            get {
+                return ((bool)(this["AirQualityLightsEnabled"]));
+            }
+        }
     }
 }
