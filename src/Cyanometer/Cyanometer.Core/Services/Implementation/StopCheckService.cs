@@ -33,7 +33,10 @@ namespace Cyanometer.Core.Services.Implementation
             }
             catch (HttpRequestException ex)
             {
-                logger.LogWarn().WithCategory(LogCategory.System).WithMessage("Failed to check for stop").WithException(ex).Commit();
+                if (!ex.Message.Contains("404 (Not Found)"))
+                {
+                    logger.LogWarn().WithCategory(LogCategory.System).WithMessage("Failed to check for stop").WithException(ex).Commit();
+                }
                 return true;
             }
             catch (Exception ex)
