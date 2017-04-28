@@ -9,7 +9,8 @@ expand partition (raspi-config)
 [How to setup OpenVPN Client](https://askubuntu.com/questions/460871/how-to-setup-openvpn-client)
 `apt-get install openvpn`  
 Test: `openvpn --config /path/to/config.ovpn`  
-Copy `.ovpn` into `/etc/openvpn` and rename it to `.conf`
+Copy `.ovpn` into `/etc/openvpn` and rename it to `.conf`  
+Replace `redirect-gateway def1` with `route 192.168.255.0 255.255.255.0` in .conf to avoid traffice routed through vpn.
 
 ## Install Mono
 [Install Mono on Linux](http://www.mono-project.com/docs/getting-started/install/linux/)  
