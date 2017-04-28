@@ -10,9 +10,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{20576742-B745-49B3-8332-EC2A18683574}"
 	ProjectSection(SolutionItems) = preProject
 		Data\applicationSettings.test.config = Data\applicationSettings.test.config
-		..\..\README.md = ..\..\README.md
-		Data\daylight.test.xml = Data\daylight.test.xml
 		Data\daylight.si.xml = Data\daylight.si.xml
+		Data\daylight.test.xml = Data\daylight.test.xml
+		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Imagging", "Cyanometer.Imagging\Cyanometer.Imagging.csproj", "{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}"
@@ -26,6 +26,20 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.AirQuality", "Cyanometer.AirQuality\Cyanometer.AirQuality.csproj", "{66FEFC95-3793-4738-907D-860D0F87AC26}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Exceptionless", "Exceptionless\src\Exceptionless\Exceptionless.csproj", "{DEA761D6-46B1-497F-B8EC-914847E49917}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Raspberry", "Raspberry", "{0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.System", "..\..\raspberry\Raspberry.System\Raspberry.System.csproj", "{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.IO", "..\..\raspberry\Raspberry.IO\Raspberry.IO.csproj", "{ACE64F17-87E5-43E7-97A0-BDDE19059C61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.IO.InterIntegratedCircuit", "..\..\raspberry\Raspberry.IO.InterIntegratedCircuit\Raspberry.IO.InterIntegratedCircuit.csproj", "{63B8403E-BC56-43F9-A045-F61ECC3871F3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.IO.GeneralPurpose", "..\..\raspberry\Raspberry.IO.GeneralPurpose\Raspberry.IO.GeneralPurpose.csproj", "{281C71ED-C36D-408E-8BAA-75C381DC17E7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.IO.Interop", "..\..\raspberry\Raspberry.IO.Interop\Raspberry.IO.Interop.csproj", "{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Righthand.WittyPi", "..\..\raspberry\Righthand.WittyPi\Righthand.WittyPi.csproj", "{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,11 +74,41 @@ Global
 		{DEA761D6-46B1-497F-B8EC-914847E49917}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DEA761D6-46B1-497F-B8EC-914847E49917}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DEA761D6-46B1-497F-B8EC-914847E49917}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE64F17-87E5-43E7-97A0-BDDE19059C61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE64F17-87E5-43E7-97A0-BDDE19059C61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE64F17-87E5-43E7-97A0-BDDE19059C61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE64F17-87E5-43E7-97A0-BDDE19059C61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63B8403E-BC56-43F9-A045-F61ECC3871F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63B8403E-BC56-43F9-A045-F61ECC3871F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63B8403E-BC56-43F9-A045-F61ECC3871F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63B8403E-BC56-43F9-A045-F61ECC3871F3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{281C71ED-C36D-408E-8BAA-75C381DC17E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{281C71ED-C36D-408E-8BAA-75C381DC17E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{281C71ED-C36D-408E-8BAA-75C381DC17E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{281C71ED-C36D-408E-8BAA-75C381DC17E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3E799852-E27E-4112-BA94-85AF55BC419E} = {27177CF7-1E15-4922-9FBB-B5391E3D1961}
+		{2C0C9AAF-4EDD-4C79-961B-E7BC4FC4EB0C} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{ACE64F17-87E5-43E7-97A0-BDDE19059C61} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{63B8403E-BC56-43F9-A045-F61ECC3871F3} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{281C71ED-C36D-408E-8BAA-75C381DC17E7} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
 	EndGlobalSection
 EndGlobal
