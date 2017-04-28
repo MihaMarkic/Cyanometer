@@ -92,5 +92,8 @@
     <Setting Name="AirQualityLightsEnabled" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="InstanceName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Testing</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

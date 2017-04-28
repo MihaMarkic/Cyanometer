@@ -292,5 +292,14 @@ namespace Cyanometer.Manager.Properties {
                 return ((bool)(this["AirQualityLightsEnabled"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Testing")]
+        public string InstanceName {
+            get {
+                return ((string)(this["InstanceName"]));
+            }
+        }
     }
 }

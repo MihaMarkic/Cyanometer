@@ -3,7 +3,6 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Manager.Properties;
 using Cyanometer.Manager.Services.Abstract;
 using Exceptionless;
-using System;
 
 namespace Cyanometer.Manager
 {
@@ -19,7 +18,7 @@ namespace Cyanometer.Manager
             exceptConfig.DefaultData["City"] = Settings.Default.City;
             exceptConfig.DefaultData["Location"] = Settings.Default.Location;
             exceptConfig.DefaultData["LocationId"] = Settings.Default.LocationId;
-            exceptConfig.SetUserIdentity(Settings.Default.LocationId.ToString(), $"{Settings.Default.City}");
+            exceptConfig.SetUserIdentity(Settings.Default.InstanceName, Settings.Default.InstanceName);
 
             var log = ExceptionlessClient.Default.Configuration.UseInMemoryLogger();
             ExceptionlessClient.Default.Startup();
