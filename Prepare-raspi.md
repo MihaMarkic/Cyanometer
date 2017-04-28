@@ -1,8 +1,8 @@
 # Setup a new device
 ## Install raspbian-lite
-Change password
-dist-upgrade
-enable camera (raspi-config)
+Change password  
+dist-upgrade  
+enable camera (raspi-config)  
 expand partition (raspi-config)
 
 ## Install OpenVPN
@@ -14,6 +14,12 @@ Copy `.ovpn` into `/etc/openvpn` and rename it to `.conf`
 ## Install Mono
 [Install Mono on Linux](http://www.mono-project.com/docs/getting-started/install/linux/)  
 Also install `mono-vbnc`
+
+## Install WittyPI software if required
+[Installation](http://www.uugear.com/product/witty-pi-realtime-clock-and-power-management-for-raspberry-pi/)
+
+`wget http://www.uugear.com/repo/WittyPi/installWittyPi.sh`  
+`pi@raspberrypi ~ $ sudo sh installWittyPi.sh`
 
 ## Change hostname
 raspi-config
@@ -28,3 +34,4 @@ or
 Copy exe and files  
 Add proper `daylight.xml file`  
 Add proper `applicationSettings.config`  
+Add entry to /etc/rc.local
