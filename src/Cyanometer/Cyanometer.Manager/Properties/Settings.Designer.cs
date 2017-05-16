@@ -301,5 +301,14 @@ namespace Cyanometer.Manager.Properties {
                 return ((string)(this["InstanceName"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CyanoNotificationsUrl {
+            get {
+                return ((string)(this["CyanoNotificationsUrl"]));
+            }
+        }
     }
 }

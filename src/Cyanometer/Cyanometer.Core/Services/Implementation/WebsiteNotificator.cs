@@ -21,9 +21,9 @@ namespace Cyanometer.Core.Services.Implementation
             this.settings = settings;
         }
 
-        public static RestClient CreateClient()
+        public static RestClient CreateClient(string url)
         {
-            var client = new RestClient("https://cyanometer-staging.herokuapp.com/");
+            var client = new RestClient(url);
             return client;
         }
 
@@ -56,7 +56,7 @@ namespace Cyanometer.Core.Services.Implementation
                 location_id = settings.LocationId
             };
 
-            var client = CreateClient();
+            var client = CreateClient(settings.CyanoNotificationsUrl);
             var request = CreateRequest($"/api/locations/{settings.LocationId}/images", Method.POST, settings.JwtToken);
             request.AddJsonBody(new { image = image });
 
@@ -102,7 +102,7 @@ namespace Cyanometer.Core.Services.Implementation
 
             string content = JsonConvert.SerializeObject(requestBody);
 
-            var client = CreateClient();
+            var client = CreateClient(settings.CyanoNotificationsUrl);
             var request = CreateRequest($"api/locations/{settings.LocationId}/environmental_data", Method.POST, settings.JwtToken);
             request.AddJsonBody(new { environmental_data = requestBody });
 

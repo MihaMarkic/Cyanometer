@@ -19,5 +19,6 @@
         int CycleWaitMinutes { get; }
         int InitialDelay { get; }
         string StopCheckUrl { get; }
+        string CyanoNotificationsUrl { get; }
     }
 }
