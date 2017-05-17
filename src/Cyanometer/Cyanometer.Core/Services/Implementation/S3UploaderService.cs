@@ -29,11 +29,22 @@ namespace Cyanometer.Core.Services.Implementation
                 Stopwatch sw = Stopwatch.StartNew();
                 IAmazonS3 client = new AmazonS3Client(settings.S3AccessKey, settings.S3PrivateKey, RegionEndpoint.EUCentral1);
                 TransferUtility transfer = new TransferUtility(client);
-                var tasks = new List<Task>(2);
                 string folder = $"prod/{settings.Country}/{settings.City}/{settings.Location}/{date.Year}/{date.Month:00}/{date.Day:00}/{Path.GetFileName(filename)}";
-                tasks.Add(transfer.UploadAsync(filename, "cyanometer-v2", folder, ct));
-                
-                await Task.WhenAll(tasks);
+
+                CancellationTokenSource ctsUpload = new CancellationTokenSource();
+                using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ctsUpload.Token, ct))
+                {
+                    var uploadTask = transfer.UploadAsync(filename, "cyanometer-v2", folder, linkedCts.Token);
+
+                    var timeoutTask = Task.Delay(TimeSpan.FromMinutes(5));
+                    var finishedTask = await Task.WhenAny(uploadTask, timeoutTask);
+                    if (finishedTask == timeoutTask)
+                    {
+                        ctsUpload.Cancel();
+                        throw new Exception("Upload to S3 timed out");
+                    }
+                }
+
                 //string photoId = flickr.UploadPicture(filename, "Cyanometer", factor?.ToString(), null, isPublic: true, isFamily: false, isFriend: false);
                 logger.LogInfo().WithCategory(LogCategory.System).WithMessage($"Uploaded id {filename} in {sw.Elapsed}").Commit();
                 return $"https://s3.eu-central-1.amazonaws.com/cyanometer-v2/{folder}";
