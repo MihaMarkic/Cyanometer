@@ -13,7 +13,7 @@ namespace Cyanometer.Core.Services.Implementation
     {
         private readonly ILogger logger;
 
-        private Dictionary<string, Daylight> times;
+        private Dictionary<(int day, int month) , Daylight> times;
 
         public DaylightManager(LoggerFactory loggerFactory)
         {
@@ -32,13 +32,7 @@ namespace Cyanometer.Core.Services.Implementation
                 if (File.Exists(fileName))
                 {
                     var doc = XDocument.Load(fileName);
-                    var query = from d in doc.Root.Elements()
-                                let key = $"{d.Attribute("Day")}_{d.Attribute("Month")}"
-                                let daylight = new Daylight(
-                                    TimeSpan.Parse((string)d.Attribute("Sunrise")),
-                                    TimeSpan.Parse((string)d.Attribute("Sunset")))
-                                select new { Key = key, Daylgiht = daylight };
-                    times = query.ToDictionary(g => g.Key, g => g.Daylgiht);
+                    LoadFrom(doc);
                     logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Loaded {times.Count} daylight items").Commit();
                 }
                 else
@@ -52,12 +46,28 @@ namespace Cyanometer.Core.Services.Implementation
             }
         }
 
+        public void LoadFrom(XDocument doc)
+        {
+            var query = from d in doc.Root.Elements()
+                        let key = (day: int.Parse((string)d.Attribute("Day")), month: int.Parse((string)d.Attribute("Month")))
+                        let daylight = new Daylight(
+                            TimeSpan.Parse((string)d.Attribute("Sunrise")),
+                            TimeSpan.Parse((string)d.Attribute("Sunset")))
+                        select new { Key = key, Daylight = daylight };
+            times = query.ToDictionary(g => g.Key, g => g.Daylight);
+        }
+
         public bool IsDay()
         {
             DateTime now = DateTime.Now;
+            return IsDay(now);
+        }
+
+        public bool IsDay(DateTime now)
+        {
             Daylight daylight;
             //logger.LogInfo().With($"Checking whether is day {now}");
-            if (times.TryGetValue($"{now.Day}_{now.Month}", out daylight))
+            if (times.TryGetValue((now.Day, now.Month), out daylight))
             {
                 //logger.Info($"Daylight data: from {daylight.Sunrise} to {daylight.Sunset}");
                 TimeSpan current = new TimeSpan(now.Hour, now.Minute, now.Second);

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Manager", "Cyanometer.Manager\Cyanometer.Manager.csproj", "{7CCF6F64-21DC-4793-842A-A9FC642687A8}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Raspberry.IO.Interop", "..\..\raspberry\Raspberry.IO.Interop\Raspberry.IO.Interop.csproj", "{689CB6C4-3D23-45DA-8E00-87C28AEA32D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Righthand.WittyPi", "..\..\raspberry\Righthand.WittyPi\Righthand.WittyPi.csproj", "{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Core.Test", "Test\Cyanometer.Core.Test\Cyanometer.Core.Test.csproj", "{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +100,10 @@ Global
 		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,5 +116,6 @@ Global
 		{281C71ED-C36D-408E-8BAA-75C381DC17E7} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
 		{689CB6C4-3D23-45DA-8E00-87C28AEA32D0} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
 		{2D1AE71F-6029-44E2-BFC1-D4F16DA29624} = {0DA26FEB-C57C-4AD8-BB3D-854510E2BACC}
+		{8C14947F-59B3-4D1A-BF10-C9FB5E879AE2} = {27177CF7-1E15-4922-9FBB-B5391E3D1961}
 	EndGlobalSection
 EndGlobal
