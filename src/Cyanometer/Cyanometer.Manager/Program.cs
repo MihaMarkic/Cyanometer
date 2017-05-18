@@ -3,6 +3,7 @@ using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Manager.Properties;
 using Cyanometer.Manager.Services.Abstract;
 using Exceptionless;
+using System;
 
 namespace Cyanometer.Manager
 {

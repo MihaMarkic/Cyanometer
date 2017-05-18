@@ -13,8 +13,8 @@ namespace Raspberry
     /// Represents the Raspberry Pi mainboard.
     /// </summary>
     /// <remarks>
-    /// Version and revisions are based on <see cref="http://raspberryalphaomega.org.uk/2013/02/06/automatic-raspberry-pi-board-revision-detection-model-a-b1-and-b2/"/>.
-    /// <see cref="http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/"/> for information.
+    /// Version and revisions are based on <see href="http://raspberryalphaomega.org.uk/2013/02/06/automatic-raspberry-pi-board-revision-detection-model-a-b1-and-b2/"/>.
+    /// <see href="http://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/"/> for information.
     /// </remarks>
     public class Board
     {
@@ -160,7 +160,7 @@ namespace Raspberry
         /// <value>
         /// The connector revision.
         /// </value>
-        /// <remarks>See <see cref="http://raspi.tv/2014/rpi-gpio-quick-reference-updated-for-raspberry-pi-b"/> for more information.</remarks>
+        /// <remarks>See <see href="http://raspi.tv/2014/rpi-gpio-quick-reference-updated-for-raspberry-pi-b"/> for more information.</remarks>
         public ConnectorPinout ConnectorPinout
         {
             get { return connectorPinout.Value; }

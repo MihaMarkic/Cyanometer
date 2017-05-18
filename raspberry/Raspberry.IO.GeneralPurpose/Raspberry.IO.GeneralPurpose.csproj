@@ -32,10 +32,6 @@
     <DocumentationFile>bin\Release\Raspberry.IO.GeneralPurpose.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Raspberry.System, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\raspberry-sharp-system\Raspberry.System\bin\Release\Raspberry.System.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
@@ -87,6 +83,10 @@
     <ProjectReference Include="..\Raspberry.IO\Raspberry.IO.csproj">
       <Project>{ace64f17-87e5-43e7-97a0-bdde19059c61}</Project>
       <Name>Raspberry.IO</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Raspberry.System\Raspberry.System.csproj">
+      <Project>{2c0c9aaf-4edd-4c79-961b-e7bc4fc4eb0c}</Project>
+      <Name>Raspberry.System</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
