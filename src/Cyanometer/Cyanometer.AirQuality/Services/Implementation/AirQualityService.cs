@@ -26,7 +26,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
         {
             try
             {
-                if (element?.Value == null)
+                if (element?.Value == null || string.IsNullOrEmpty(element.Value))
                 {
                     return null;
                 }
