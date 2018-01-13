@@ -48,7 +48,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
                         logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage("Failed loading last tweet's text").WithException(ex).Commit();
                     }
                 }
-                string text = $"Onesnaženost je {PolutionToSlovene(pollution)}.";
+                string text = $"Onesnaženost je {PollutionToSlovene(pollution)}.";
                 if (pollution != AirPollution.Low)
                 {
                     text += $" Glavni krivec je {chief}.";
@@ -82,7 +82,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             }
         }
 
-        public static string PolutionToSlovene(AirPollution pollution)
+        public static string PollutionToSlovene(AirPollution pollution)
         {
             switch (pollution)
             {

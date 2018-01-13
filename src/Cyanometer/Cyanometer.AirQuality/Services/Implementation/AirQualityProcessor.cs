@@ -66,7 +66,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             }
             else
             {
-                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Creating new state state").Commit();
+                logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Creating new state").Commit();
                 state = new AirQualityPersisted();
             }
             DateTime? latestDate = state.NewestDate;
@@ -79,7 +79,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
             var calculatedPollution = CalculateMaxPollution(pollutions);
             AirPollution pollution = calculatedPollution.Pollution;
             Measurement chief = GetChiefPolluter(pollutions);
-            string pollutionInfo = $"Max pollution is {pollution} with index {calculatedPollution.Index:0} comming from {chief}";
+            string pollutionInfo = $"Max pollution is {pollution} with index {calculatedPollution.Index:0} coming from {chief}";
             logger.LogInfo().WithCategory(LogCategory.AirQuality)
                 .WithMessage(pollutionInfo).Commit();
             if (settings.AirQualityLightsEnabled)
@@ -158,7 +158,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
 
         public CalculatedPollution[] CalculatePollutions(DateTime date, AirQualityPersisted state)
         {
-            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calcullating pollutions").Commit();
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Calculating pollutions").Commit();
             CalculatedPollution[] pollution = new CalculatedPollution[]
             {
                 CalculatePollution(date, Measurement.PM10, state.PM10, CalculatePM10PollutionIndex(state.PM10?.Value ?? 0)),

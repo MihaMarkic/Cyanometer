@@ -82,7 +82,6 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
             BlockingCollection<int> result = new BlockingCollection<int>();
             colorCalculator.Init(colors);
 
-            Color nearestx = colorCalculator.CalculateNearest(image[0]);
             Parallel.ForEach(Partitioner.Create(0, image.Count),
                 (range, loopState) =>
                 {
@@ -93,8 +92,8 @@ namespace Cyanometer.SkyCalculator.Services.Implementation
                     }
                 });
 
-            var prunned = result.Where(r => r <= 35 && r >= 11).ToArray();
-            double index = prunned.Length > 0 ? prunned.Sum() / prunned.Length: 0;
+            var pruned = result.Where(r => r <= 35 && r >= 11).ToArray();
+            double index = pruned.Length > 0 ? pruned.Sum() / pruned.Length: 0;
 
             return new GetBluenessIndexResult
             {
