@@ -106,17 +106,18 @@ namespace Cyanometer.Manager.Services.Implementation
 
         public async Task SetSystemTimeAsync(CancellationToken ct)
         {
-            DateTime now = DateTime.Now;
+            DateTime now = DateTime.UtcNow;
             await Retrier.RetryAsync(() =>
             {
                 now = ntpService.GetNetworkTime();
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now}").Commit();
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
+                now = now.ToUniversalTime();
             }, logger, 5, "Read NTP", false, ct);
             SetSystemTime(now);
             await Retrier.RetryAsync(() =>
             {
                 wittyPiService.RtcDateTime = now;
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC set to : {wittyPiService.RtcDateTime}").Commit();
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC set to : {wittyPiService.RtcDateTime.ToLocalTime()}").Commit();
             }, logger, 5, "Read RTC", true, ct);
         }
 
@@ -161,15 +162,16 @@ namespace Cyanometer.Manager.Services.Implementation
         public async Task SystemSleepAsync(DateTime start, CancellationToken ct)
         {
             DateTime wakeUpTime = start.AddMinutes(settings.SleepMinutes);
-            DateTime now = DateTime.Now;
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC: {now}, wakup at {wakeUpTime}").Commit();
+            DateTime now = DateTime.UtcNow;
+            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC: {now.ToLocalTime()}, wakeup at {wakeUpTime.ToLocalTime()}").Commit();
             await Retrier.RetryAsync(() =>
             {
                 wittyPiService.WakeUp = WakeUpDateTime.Hourly((byte)wakeUpTime.Minute, (byte)wakeUpTime.Second);
             }, logger, 5, "Setting wakeup", true, ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Shutting down").Commit();
-            var sleep = now.AddSeconds(100);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Going to sleep in 100 secs at {sleep}").Commit();
+            const int sleepDelaySeconds = 100;
+            var sleep = now.AddSeconds(sleepDelaySeconds);
+            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Going to sleep in {sleepDelaySeconds} secs at {sleep.ToLocalTime()}").Commit();
             await Retrier.RetryAsync(() =>
             {
                 wittyPiService.Sleep = new SleepDateTime((byte)sleep.Day, (byte)sleep.Hour, (byte)sleep.Minute);
