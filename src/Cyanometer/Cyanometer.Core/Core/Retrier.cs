@@ -24,11 +24,11 @@ namespace Cyanometer.Core.Core
                 }
                 catch (Exception ex) when (i < times - 1)
                 {
-                    logger.LogInfo().WithCategory(LogCategory.Common).WithMessage($"Failed {failure}:{ex.Message} on loop {i + 1}, will retry").Commit();
+                    logger.LogWarn().WithCategory(LogCategory.Common).WithMessage($"Failed {failure}:{ex.Message} on loop {i + 1}, will retry").Commit();
                 }
                 catch (Exception ex)
                 {
-                    logger.LogInfo().WithCategory(LogCategory.Common).WithMessage($"Failed {failure} on last try, giving up").WithException(ex).Commit();
+                    logger.LogError().WithCategory(LogCategory.Common).WithMessage($"Failed {failure} on last try, giving up").WithException(ex).Commit();
                     if (throwOnFailure)
                     {
                         throw;

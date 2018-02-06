@@ -57,7 +57,7 @@ namespace Cyanometer.Manager.Services.Implementation
                 {
                     SignalWaiter.Instance.WaitExitSignal();
                     cts.Cancel();
-                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Received SIGTERM").Commit();
+                    logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage("Received SIGTERM").Commit();
                 }, ct, TaskCreationOptions.LongRunning);
             }
             try
