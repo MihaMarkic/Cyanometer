@@ -20,5 +20,6 @@
         int InitialDelay { get; }
         string StopCheckUrl { get; }
         string CyanoNotificationsUrl { get; }
+        bool SyncWithNntp { get; }
     }
 }
