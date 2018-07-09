@@ -1,8 +1,9 @@
 ﻿using Cyanometer.Core;
-using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Manager.Properties;
 using Cyanometer.Manager.Services.Abstract;
 using Exceptionless;
+using NLog;
+using NLog.Common;
 using System;
 
 namespace Cyanometer.Manager
@@ -11,6 +12,9 @@ namespace Cyanometer.Manager
     {
         static void Main(string[] args)
         {
+            //InternalLogger.LogToConsole = true;
+            //InternalLogger.LogLevel = LogLevel.Trace;
+
             var exceptConfig = ExceptionlessClient.Default.Configuration;
             exceptConfig.Enabled = Settings.Default.ExceptionlessEnabled;
             exceptConfig.ServerUrl = Settings.Default.ExceptionlessServer;
@@ -25,7 +29,7 @@ namespace Cyanometer.Manager
             ExceptionlessClient.Default.Startup();
 
             IoC.Register();
-            var daylightManager = IoCRegistrar.Resolve<IDaylightManager>();
+            var daylightManager = IoCRegistrar.Resolve<Core.Services.Abstract.IDaylightManager>();
             daylightManager.Load();
             var processor = IoCRegistrar.Resolve<IProcessor>();
             processor.Process();
