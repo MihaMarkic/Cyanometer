@@ -36,5 +36,27 @@ namespace Cyanometer.Core.Core
                 }
             }
         }
+        public static async Task<T> RetryAsync<T>(Func<T> func, ILogger logger, string failure, CancellationToken ct)
+        {
+            int loop = 0;
+            while (true)
+            {
+                try
+                {
+                    ct.ThrowIfCancellationRequested();
+                    return func();
+                }
+                catch (OperationCanceledException)
+                {
+                    logger.LogWarn().WithCategory(LogCategory.Common).WithMessage($"Exiting {failure}").Commit();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogWarn().WithCategory(LogCategory.Common).WithMessage($"Failed {failure}:{ex.Message} on loop {loop + 1}, will retry").Commit();
+                    await Task.Delay(100, ct);
+                    loop++;
+                }
+            }
+        }
     }
 }

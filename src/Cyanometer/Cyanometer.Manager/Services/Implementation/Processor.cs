@@ -41,6 +41,7 @@ namespace Cyanometer.Manager.Services.Implementation
         }
         public void Process()
         {
+            logger.LogInfo().WithMessage($"Cyanometer Manager v{typeof(Processor).Assembly.GetName().Version}").Commit();
             cts = new CancellationTokenSource();
             var ct = cts.Token;
 
@@ -100,12 +101,12 @@ namespace Cyanometer.Manager.Services.Implementation
 
         public async Task PrepareForLoopAsync(CancellationToken ct)
         {
-            var currentSleep = wittyPiService.Sleep;
+            var currentSleep = await Retrier.RetryAsync(() => wittyPiService.Sleep, logger, "Read Sleep", ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Sleep at boot is set to day {currentSleep.Day} {currentSleep.Hour}:{currentSleep.Min:00}").Commit();
             await Retrier.RetryAsync(() =>
             {
                 referenceNow = wittyPiService.RtcDateTime;
-            }, logger, 1000, "Read RTC", true, ct);
+            }, logger, int.MaxValue, "Read RTC", true, ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) set to : {referenceNow.ToLocalTime()}").Commit();
             if (settings.InitialDelay > 0)
             {
@@ -128,13 +129,13 @@ namespace Cyanometer.Manager.Services.Implementation
                 now = ntpService.GetNetworkTime();
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
                 now = now.ToUniversalTime();
-            }, logger, 5, "Read NTP", false, ct);
+            }, logger, int.MaxValue, "Read NTP", false, ct);
             SetSystemTime(now);
             await Retrier.RetryAsync(() =>
             {
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Writing to RTC").Commit();
                 wittyPiService.RtcDateTime = now;
-            }, logger, 5, "Read RTC", true, ct);
+            }, logger, int.MaxValue, "Read RTC", true, ct);
             referenceNow = now.AddMinutes(-settings.InitialDelay);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) reset to : {referenceNow.ToLocalTime()}").Commit();
         }
@@ -190,7 +191,7 @@ namespace Cyanometer.Manager.Services.Implementation
                 {
                     throw new Exception("Read Wakeup date doesn't match");
                 }
-            }, logger, 5, "Setting wakeup", true, ct);
+            }, logger, int.MaxValue, "Setting wakeup", true, ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("WakeUp set").Commit();
         }
         public async Task SystemSleepAsync(DateTime start, TimeSpan elapsed, CancellationToken ct)
@@ -209,7 +210,7 @@ namespace Cyanometer.Manager.Services.Implementation
                 {
                     throw new Exception("Read Sleep date doesn't match");
                 }
-            }, logger, 5, "Setting sleep", true, ct);
+            }, logger, int.MaxValue, "Setting sleep", true, ct);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Sleep set").Commit();
         }
 
