@@ -19,7 +19,7 @@ namespace Cyanometer.Core.Services.Implementation
         }
         public async Task SendHeartbeatAsync(CancellationToken ct)
         {
-            logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Verify can shutdown").Commit();
+            logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Sending heartbeat").Commit();
             try
             {
                 var client = new HttpClient();
@@ -28,7 +28,7 @@ namespace Cyanometer.Core.Services.Implementation
             }
             catch (Exception ex)
             {
-                logger.LogWarn().WithCategory(LogCategory.System).WithMessage("Can shutdown, got exception on check").WithException(ex).Commit();
+                logger.LogWarn().WithCategory(LogCategory.System).WithMessage("Heartbeat sending failure").WithException(ex).Commit();
             }
         }
     }
