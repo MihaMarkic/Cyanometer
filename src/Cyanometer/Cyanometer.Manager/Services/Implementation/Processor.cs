@@ -24,12 +24,13 @@ namespace Cyanometer.Manager.Services.Implementation
         private readonly INtpService ntpService;
         private readonly IStopCheckService stopCheckService;
         private readonly IAirQualityProcessor airQualityProcessor;
+        readonly IHeartbeatService heartbeatService;
         private CancellationTokenSource cts;
         DateTime referenceNow;
         Stopwatch elapsedSinceReference;
 
         public Processor(LoggerFactory loggerFactory, ISettings settings, IImageProcessor imageProcessor, IWittyPiService wittyPiService,
-            INtpService ntpService, IStopCheckService stopCheckService, IAirQualityProcessor airQualityProcessor)
+            INtpService ntpService, IStopCheckService stopCheckService, IAirQualityProcessor airQualityProcessor, IHeartbeatService heartbeatService)
         {
             this.logger = loggerFactory(nameof(Processor));
             this.settings = settings;
@@ -38,6 +39,7 @@ namespace Cyanometer.Manager.Services.Implementation
             this.ntpService = ntpService;
             this.stopCheckService = stopCheckService;
             this.airQualityProcessor = airQualityProcessor;
+            this.heartbeatService = heartbeatService;
         }
         public void Process()
         {
@@ -65,6 +67,10 @@ namespace Cyanometer.Manager.Services.Implementation
             {
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage(settings.SyncWithNntp ? "Syncing with NNTP" : "Using RTC time only").Commit();
                 elapsedSinceReference = Stopwatch.StartNew();
+                if (settings.SendHeartbeat)
+                {
+                    heartbeatService.SendHeartbeatAsync(ct).GetAwaiter().GetResult();
+                }
                 PrepareForLoopAsync(ct).Wait(ct);
                 bool shouldLoop = settings.CycleWaitMinutes > 0;
                 do
@@ -98,7 +104,6 @@ namespace Cyanometer.Manager.Services.Implementation
             }
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("All done, exiting").Commit();
         }
-
         public async Task PrepareForLoopAsync(CancellationToken ct)
         {
             var currentSleep = await Retrier.RetryAsync(() => wittyPiService.Sleep, logger, "Read Sleep", ct);

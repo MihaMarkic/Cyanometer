@@ -21,5 +21,13 @@
         string StopCheckUrl { get; }
         string CyanoNotificationsUrl { get; }
         bool SyncWithNntp { get; }
+        /// <summary>
+        /// When true a heartbeat signal is sent to <see cref="HeartbeatAddress"/>.
+        /// </summary>
+        bool SendHeartbeat { get; }
+        /// <summary>
+        /// Server address for the heartbeat signal.
+        /// </summary>
+        string HeartbeatAddress { get; }
     }
 }

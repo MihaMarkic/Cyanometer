@@ -59,6 +59,7 @@ namespace Cyanometer.Core
             builder.RegisterGeneratedFactory<LoggerFactory>(new TypedService(typeof(ILogger)));
             builder.RegisterType<StopCheckService>().As<IStopCheckService>();
             builder.RegisterType<NtpService>().As<INtpService>();
+            builder.RegisterType<HeartbeatService>().As<IHeartbeatService>().SingleInstance();
         }
 
         /// <summary>

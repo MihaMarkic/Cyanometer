@@ -44,6 +44,9 @@
     <Reference Include="AWSSDK, Version=2.3.55.2, Culture=neutral, PublicKeyToken=9f476d3089b52be3, processorArchitecture=MSIL">
       <HintPath>..\packages\AWSSDK.2.3.55.2\lib\net45\AWSSDK.dll</HintPath>
     </Reference>
+    <Reference Include="Flurl, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Flurl.2.8.0\lib\net40\Flurl.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -107,6 +110,8 @@
     <Compile Include="Services\Implementation\FakeS3UploaderService.cs" />
     <Compile Include="Services\Implementation\FakeWittyPiService.cs" />
     <Compile Include="Services\Implementation\FileService.cs" />
+    <Compile Include="Services\Implementation\HeartbeatService.cs" />
+    <Compile Include="Services\Abstract\IHeartbeatService.cs" />
     <Compile Include="Services\Implementation\NtpService.cs" />
     <Compile Include="Services\Implementation\RaspberryService.cs" />
     <Compile Include="Services\Implementation\S3UploaderService.cs" />
