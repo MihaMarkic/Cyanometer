@@ -65,13 +65,13 @@ namespace Cyanometer.Manager.Services.Implementation
             }
             try
             {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage(settings.SyncWithNntp ? "Syncing with NNTP" : "Using RTC time only").Commit();
+                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Syncing mode:" + (settings.SyncWithNntp ? "with NNTP" : "using RTC time only")).Commit();
                 elapsedSinceReference = Stopwatch.StartNew();
+                PrepareForLoopAsync(ct).Wait(ct);
                 if (settings.SendHeartbeat)
                 {
                     heartbeatService.SendHeartbeatAsync(ct).GetAwaiter().GetResult();
                 }
-                PrepareForLoopAsync(ct).Wait(ct);
                 bool shouldLoop = settings.CycleWaitMinutes > 0;
                 do
                 {
@@ -129,18 +129,27 @@ namespace Cyanometer.Manager.Services.Implementation
         public async Task SetSystemTimeAsync(CancellationToken ct)
         {
             DateTime now = DateTime.UtcNow;
-            await Retrier.RetryAsync(() =>
+            try
             {
-                now = ntpService.GetNetworkTime();
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
-                now = now.ToUniversalTime();
-            }, logger, int.MaxValue, "Read NTP", false, ct);
-            SetSystemTime(now);
-            await Retrier.RetryAsync(() =>
+                await Retrier.RetryAsync(() =>
+                {
+                    now = ntpService.GetNetworkTime();
+                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
+                    now = now.ToUniversalTime();
+                }, logger, 10, "Read NTP", true, ct);
+                SetSystemTime(now);
+                await Retrier.RetryAsync(() =>
+                {
+                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Writing to RTC").Commit();
+                    wittyPiService.RtcDateTime = now;
+                }, logger, int.MaxValue, "Read RTC", true, ct);
+            }
+            catch (Exception ex)
             {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Writing to RTC").Commit();
-                wittyPiService.RtcDateTime = now;
-            }, logger, int.MaxValue, "Read RTC", true, ct);
+                now = DateTime.UtcNow;
+                logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage($"Failed to read NTP or set it, will use local {now}")
+                    .WithException(ex).Commit();
+            }
             referenceNow = now.AddMinutes(-settings.InitialDelay);
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) reset to : {referenceNow.ToLocalTime()}").Commit();
         }
