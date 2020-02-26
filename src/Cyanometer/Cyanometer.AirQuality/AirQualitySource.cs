@@ -3,6 +3,7 @@
     public enum AirQualitySource
     {
         Arso,
-        WroclawPios
+        WroclawPios,
+        Gios,
     }
 }

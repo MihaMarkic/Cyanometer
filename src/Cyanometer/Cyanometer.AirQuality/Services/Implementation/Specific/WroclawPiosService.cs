@@ -16,8 +16,11 @@ namespace Cyanometer.AirQuality.Services.Implementation
 {
     public class WroclawPiosService : AirQualityService, IAirQualityService
     {
-        public WroclawPiosService(LoggerFactory loggerFactory, IAirQualitySettings settings) : 
-            base(loggerFactory, settings, "http://air.wroclaw.pios.gov.pl/dane-pomiarowe/api/automatyczne/stacja/DOL012/12O3_43I-12SO2_43I-12NO2A-12PM10/dzienny/")
+        public WroclawPiosService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client) : 
+            base(
+                loggerFactory, settings, client,
+                "http://air.wroclaw.pios.gov.pl/dane-pomiarowe/api/automatyczne/stacja/DOL012/12O3_43I-12SO2_43I-12NO2A-12PM10/dzienny/"
+            )
         {
             client.Authenticator = new HttpBasicAuthenticator(settings.AirQualityUsername, settings.AirQualityPassword);
         }

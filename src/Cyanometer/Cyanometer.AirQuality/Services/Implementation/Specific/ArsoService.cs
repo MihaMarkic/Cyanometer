@@ -16,7 +16,8 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
     public class ArsoService : AirQualityService, IAirQualityService
     {
         private const string Url = "ones_zrak_urni_podatki_zadnji.xml";
-        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings): base(loggerFactory, settings, "http://www.arso.gov.si/xml/zrak/")
+        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client)
+            : base(loggerFactory, settings, client, "http://www.arso.gov.si/xml/zrak/")
         {
         }
         public async Task<AirQualityData> GetIndexAsync(CancellationToken ct)

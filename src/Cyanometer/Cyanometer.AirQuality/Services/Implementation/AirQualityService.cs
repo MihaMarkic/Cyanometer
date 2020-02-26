@@ -13,11 +13,12 @@ namespace Cyanometer.AirQuality.Services.Implementation
     {
         protected readonly ILogger logger;
         protected readonly IAirQualitySettings settings;
-        protected readonly RestClient client;
-        public AirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings, string baseUrl)
+        protected readonly IRestClient client;
+        public AirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client, string baseUrl)
         {
             logger = loggerFactory(nameof(AirQualityService));
-            client = new RestClient(baseUrl);
+            this.client = client;
+            client.BaseUrl = new Uri(baseUrl);
             this.settings = settings;
         }
         

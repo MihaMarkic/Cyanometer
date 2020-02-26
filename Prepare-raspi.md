@@ -8,13 +8,17 @@ expand partition (raspi-config)
 ## Install OpenVPN
 [Create key](https://hub.docker.com/r/kylemanna/openvpn/) with no password.
 
+Can use `docker-compose run openvpn bash`  and then commands.
+
+Make sure that address is vpn.rthand.com and not openvpn.rthand.com in generated .ovpn file.
+
 Add CLIENTNAME entry ipconfig-push into OpenVPN server */etc/openVpn/ccd* directory to have a static IP.
 
 [How to setup OpenVPN Client](https://askubuntu.com/questions/460871/how-to-setup-openvpn-client)
 `apt-get install openvpn`  
 Test: `openvpn --config /path/to/config.ovpn`  
 Copy `.ovpn` into `/etc/openvpn` and rename it to `.conf`  
-Replace `redirect-gateway def1` with `route 192.168.255.0 255.255.255.0` in .conf to avoid traffice routed through vpn.
+Replace `redirect-gateway def1` with `route 192.168.255.0 255.255.255.0` in .conf to avoid traffic routed through vpn.
 
 ## Configure timezone
 
