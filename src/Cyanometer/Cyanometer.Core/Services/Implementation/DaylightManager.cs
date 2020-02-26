@@ -67,7 +67,9 @@ namespace Cyanometer.Core.Services.Implementation
         {
             Daylight daylight;
             //logger.LogInfo().With($"Checking whether is day {now}");
-            if (times.TryGetValue((now.Day, now.Month), out daylight))
+            // cheat on 29th Feb - make it 28th
+            int day = (now.Month == 2 && now.Day == 29) ? 28 : now.Day;
+            if (times.TryGetValue((day, now.Month), out daylight))
             {
                 //logger.Info($"Daylight data: from {daylight.Sunrise} to {daylight.Sunset}");
                 TimeSpan current = new TimeSpan(now.Hour, now.Minute, now.Second);
