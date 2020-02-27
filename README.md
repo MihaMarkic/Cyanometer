@@ -10,3 +10,15 @@ Setup info
 Remarks
 - Currently contains [raspberry-sharp-io](https://github.com/raspberry-sharp/raspberry-sharp-io), [raspberry-sharp-system](https://github.com/raspberry-sharp/raspberry-sharp-system) and [WittyPiNet](https://github.com/MihaMarkic/WittyPiNet) sources because raspberry-sharp-system (core assembly) doesn't handle Raspberry PI 3 B correctly (Processor.Unknown) and I duct-type fixed it.  
 Once that is fixed, it will switch to NuGet packages.
+
+## Locations
+
+| Location       | Id   |
+| -------------- | ---- |
+| Ljubljana      | 1    |
+| Wroclaw Imager | 2    |
+| Wroclaw Air    | 3    |
+
+## How to make sleeping Raspberry awake
+
+Places stop-{LocationId}.txt file with content 'mihies' at misc.rthand.com address.
