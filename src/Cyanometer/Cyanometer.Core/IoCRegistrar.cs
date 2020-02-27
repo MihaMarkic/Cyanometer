@@ -39,7 +39,7 @@ namespace Cyanometer.Core
             return Container.ResolveKeyed<T>(serviceKey);
         }
 
-        public static void Register(bool useFakeRaspberryService, ContainerBuilder builder)
+        public static void Register(bool useFakeRaspberryService, bool hasWittyPi, ContainerBuilder builder)
         {
             builder.RegisterType<DaylightManager>().As<IDaylightManager>().SingleInstance();
             builder.RegisterType<FileService>().As<IFileService>().SingleInstance();
@@ -49,12 +49,18 @@ namespace Cyanometer.Core
             if (useFakeRaspberryService)
             {
                 builder.RegisterType<FakeRaspberryService>().As<IRaspberryService>();
-                builder.RegisterType<FakeWittyPiService>().As<IWittyPiService>();
             }
             else
             {
                 builder.RegisterType<RaspberryService>().As<IRaspberryService>();
+            }
+            if (hasWittyPi)
+            {
                 builder.RegisterType<WittyPiService>().As<IWittyPiService>();
+            }
+            else
+            {
+                builder.RegisterType<FakeWittyPiService>().As<IWittyPiService>();
             }
             builder.RegisterGeneratedFactory<LoggerFactory>(new TypedService(typeof(ILogger)));
             builder.RegisterType<StopCheckService>().As<IStopCheckService>();

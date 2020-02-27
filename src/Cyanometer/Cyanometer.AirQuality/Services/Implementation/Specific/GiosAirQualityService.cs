@@ -57,6 +57,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
 
         internal async Task<ImmutableDictionary<ParamId, int?>> GetSensorIdsAsync(CancellationToken ct)
         {
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting SensorIds").Commit();
             var sensors = await GetSensorsAsync(ct);
             var result = ImmutableDictionary<ParamId, int?>.Empty;
             ImmutableDictionary<int, SensorResult> map = sensors.Where(s => s.Param != null).ToImmutableDictionary(s => s.Param.IdParam, s => s);
@@ -67,24 +68,28 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
                     result = result.Add(typeId, sr.Id);
                 }
             }
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting SensorIds ... done").Commit();
             return result;
         }
 
         public async Task<Measurements> GetDataAsync(int sensorId, CancellationToken ct)
         {
             var request = new RestRequest($"data/getData/{sensorId}", Method.GET);
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensorId for {request.Resource}").Commit();
             var response = await client.ExecuteGetTaskAsync(request, ct);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage($"Failed retrieving Wroclaw GIOS raw data: {response.ErrorMessage}").Commit();
             }
             var result = JsonConvert.DeserializeObject<Measurements>(response.Content);
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensorId for {request.Resource} ... done").Commit();
             return result;
         }
 
         public async Task<SensorResult[]> GetSensorsAsync(CancellationToken ct)
         {
             var request = new RestRequest($"station/sensors/{WroclawStationId}", Method.GET);
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensors for {request.Resource}").Commit();
             var response = await client.ExecuteGetTaskAsync(request, ct);
             if (response.StatusCode != HttpStatusCode.OK)
             {
@@ -92,6 +97,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
                 return null;
             }
             var result = JsonConvert.DeserializeObject<SensorResult[]>(response.Content);
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensors for {request.Resource} ... done").Commit();
             return result;
         }
 
