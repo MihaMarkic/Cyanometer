@@ -6,10 +6,6 @@
         string City { get; }
         string Location { get; }
         int LocationId { get; }
-        string JwtToken { get; }
-        string S3AccessKey { get; }
-        string S3PrivateKey { get; }
-        string S3Bucket { get; }
         bool ExceptionlessEnabled { get; }
         string ExceptionlessServer { get; }
         string ExceptionlessApiKey { get; }
@@ -29,5 +25,9 @@
         /// Server address for the heartbeat signal.
         /// </summary>
         string HeartbeatAddress { get; }
+        /// <summary>
+        /// This is a token used to communicate with Cyanometer web
+        /// </summary>
+        string CyanoToken { get; }
     }
 }

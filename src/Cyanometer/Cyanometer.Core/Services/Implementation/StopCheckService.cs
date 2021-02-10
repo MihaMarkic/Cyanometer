@@ -1,5 +1,6 @@
 ﻿using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
+using Flurl;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -9,12 +10,14 @@ namespace Cyanometer.Core.Services.Implementation
 {
     public class StopCheckService : IStopCheckService
     {
-        private readonly ILogger logger;
-        private readonly ISettings settings;
-        public StopCheckService(LoggerFactory loggerFactory, ISettings settings)
+        readonly ILogger logger;
+        readonly ISettings settings;
+        readonly HttpClient client;
+        public StopCheckService(LoggerFactory loggerFactory, ISettings settings, HttpClient client)
         {
             logger = loggerFactory(nameof(StopCheckService));
             this.settings = settings;
+            this.client = client;
         }
 
         public async Task<bool> CanShutdownAsync(CancellationToken ct)
@@ -22,8 +25,8 @@ namespace Cyanometer.Core.Services.Implementation
             logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Verify can shutdown").Commit();
             try
             {
-                HttpClient client = new HttpClient { BaseAddress = new Uri(settings.StopCheckUrl) };
-                var content = await client.GetStringAsync($"stop-{settings.LocationId}.txt");
+                string url = Url.Combine(settings.StopCheckUrl, $"stop-{settings.LocationId}.txt");
+                var content = await client.GetStringAsync(url);
                 bool canShutdown = !string.Equals("mihies", content, StringComparison.Ordinal);
                 if (!canShutdown)
                 {

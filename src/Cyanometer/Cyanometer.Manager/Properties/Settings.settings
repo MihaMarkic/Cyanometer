@@ -2,15 +2,6 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Cyanometer.Manager.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="S3AccessKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="S3PrivateKey" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="S3Bucket" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
-    </Setting>
     <Setting Name="Country" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
@@ -22,9 +13,6 @@
     </Setting>
     <Setting Name="LocationId" Type="System.Int32" Scope="Application">
       <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="JwtToken" Type="System.String" Scope="Application">
-      <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ExceptionlessEnabled" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">False</Value>
@@ -109,6 +97,9 @@
     </Setting>
     <Setting Name="HasWittyPi" Type="System.Boolean" Scope="Application">
       <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="CyanoToken" Type="System.String" Scope="Application">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

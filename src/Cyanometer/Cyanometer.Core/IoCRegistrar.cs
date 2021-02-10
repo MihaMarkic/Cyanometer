@@ -7,6 +7,7 @@ using Cyanometer.Core.Services.Logging;
 using Righthand.WittyPi;
 using System;
 using System.Diagnostics;
+using System.Net.Http;
 
 namespace Cyanometer.Core
 {
@@ -43,9 +44,8 @@ namespace Cyanometer.Core
         {
             builder.RegisterType<DaylightManager>().As<IDaylightManager>().SingleInstance();
             builder.RegisterType<FileService>().As<IFileService>().SingleInstance();
-            builder.RegisterType<S3UploaderService>().As<IUploaderService>();
+            builder.RegisterType<CyanoUploaderService>().As<IUploaderService>();
             builder.RegisterType<FileService>().As<IFileService>();
-            builder.RegisterType<WebsiteNotificator>().As<IWebsiteNotificator>();
             if (useFakeRaspberryService)
             {
                 builder.RegisterType<FakeRaspberryService>().As<IRaspberryService>();
@@ -66,6 +66,7 @@ namespace Cyanometer.Core
             builder.RegisterType<StopCheckService>().As<IStopCheckService>();
             builder.RegisterType<NtpService>().As<INtpService>();
             builder.RegisterType<HeartbeatService>().As<IHeartbeatService>().SingleInstance();
+            builder.Register<HttpClient>(c => new HttpClient { Timeout = TimeSpan.FromMinutes(10) }).SingleInstance();
         }
 
         /// <summary>

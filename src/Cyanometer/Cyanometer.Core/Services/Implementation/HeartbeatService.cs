@@ -12,17 +12,18 @@ namespace Cyanometer.Core.Services.Implementation
     {
         readonly ILogger logger;
         readonly ISettings settings;
-        public HeartbeatService(LoggerFactory loggerFactory, ISettings settings)
+        readonly HttpClient client;
+        public HeartbeatService(LoggerFactory loggerFactory, ISettings settings, HttpClient client)
         {
             logger = loggerFactory(nameof(HeartbeatService)); ;
             this.settings = settings;
+            this.client = client;
         }
         public async Task SendHeartbeatAsync(CancellationToken ct)
         {
             logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Sending heartbeat").Commit();
             try
             {
-                var client = new HttpClient();
                 var url = Url.Combine(settings.HeartbeatAddress, $"api/ping/{settings.LocationId}?Country={settings.Country}&City={settings.City}&Location={settings.Location}");
                 await client.PostAsync(url, new StringContent(DateTime.Now.ToString()));
             }

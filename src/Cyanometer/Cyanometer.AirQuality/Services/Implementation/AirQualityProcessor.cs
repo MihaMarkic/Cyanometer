@@ -20,20 +20,18 @@ namespace Cyanometer.AirQuality.Services.Implementation
         private readonly IFileService file;
         private readonly IAirQualityService arso;
         private readonly IShiftRegister shiftRegister;
-        private readonly IWebsiteNotificator websiteNotificator;
         private readonly IStopCheckService stopCheckService;
         private readonly ITwitterPush twitterPush;
         private readonly INtpService ntpService;
         private readonly IAirQualitySettings settings;
 
         public AirQualityProcessor(LoggerFactory loggerFactory, IFileService file, IAirQualityService arso, IShiftRegister shiftRegister,
-                IWebsiteNotificator websiteNotificator, IAirQualitySettings settings,
+                IAirQualitySettings settings,
                 IStopCheckService stopCheckService, ITwitterPush twitterPush, INtpService ntpService)
         {
             Contract.Requires(file != null);
             Contract.Requires(arso != null);
             Contract.Requires(shiftRegister != null);
-            Contract.Requires(websiteNotificator != null, "websiteNotificator is null.");
             Contract.Requires(settings != null, nameof(settings) + " is null.");
             Contract.Requires(stopCheckService != null, "stopCheckService is null.");
             Contract.Requires(twitterPush != null, "tweeterPush is null.");
@@ -43,7 +41,6 @@ namespace Cyanometer.AirQuality.Services.Implementation
             this.file = file;
             this.arso = arso;
             this.shiftRegister = shiftRegister;
-            this.websiteNotificator = websiteNotificator;
             this.settings = settings;
             this.stopCheckService = stopCheckService;
             this.twitterPush = twitterPush;
@@ -99,23 +96,6 @@ namespace Cyanometer.AirQuality.Services.Implementation
             DateTime? newestDate = state.NewestDate;
             if (settings.AirQualityUploadEnabled)
             {
-                if (newestDate.HasValue && (!latestDate.HasValue || newestDate.Value > latestDate.Value))
-                {
-                    var uploadResult = await websiteNotificator.NotifyAirQualityMeasurementAsync((int)calculatedPollution.Pollution + 1, chief, newestDate.Value, ct);
-                    if (uploadResult.IsSuccess)
-                    {
-                        logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Notification was successful: {uploadResult.Message}").Commit();
-                    }
-                    else
-                    {
-                        logger.LogWarn().WithCategory(LogCategory.AirQuality).WithMessage(($"Notification failed: {uploadResult.Message}")).Commit();
-                    }
-                }
-                else
-                {
-                    logger.LogInfo().WithCategory(LogCategory.AirQuality)
-                        .WithMessage($"No notification since newest date ({newestDate}) isn't newer compared to latest {latestDate}").Commit();
-                }
                 await twitterPush.PushAsync(pollution, chief, state.NewestDate ?? DateTime.MinValue, ct);
             }
             else
