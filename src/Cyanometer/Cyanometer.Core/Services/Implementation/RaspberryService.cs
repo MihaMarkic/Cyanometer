@@ -10,10 +10,12 @@ namespace Cyanometer.Core.Services.Implementation
 {
     public class RaspberryService : IRaspberryService
     {
-        private readonly ILogger logger;
-        public RaspberryService(LoggerFactory loggerFactory)
+        readonly ILogger logger;
+        readonly ISettings settings;
+        public RaspberryService(LoggerFactory loggerFactory, ISettings settings)
         {
             logger = loggerFactory(nameof(RaspberryService));
+            this.settings = settings;
         }
         public Task TakePhotoAsync(string filename, Size? size, CancellationToken ct)
         {
@@ -22,7 +24,9 @@ namespace Cyanometer.Core.Services.Implementation
             {
                 logger.LogDebug().WithCategory(LogCategory.System).WithMessage($"Starting taking photo {filename} of size {size}").Commit();
                 string resolution = size.HasValue ? $"--width {size.Value.Width} --height {size.Value.Height}" : string.Empty;
-                Process proc = Process.Start("raspistill", $" -ISO 100 -awb horizon -o {filename} {resolution}");
+                string arguments = $" {settings.RaspiStillAdditionalArguments} -o {filename} {resolution}";
+                logger.LogDebug().WithCategory(LogCategory.System).WithMessage($"Invoking 'raspistill {arguments}'").Commit();
+                Process proc = Process.Start("raspistill", arguments);
                 if (proc.HasExited)
                 {
                     proc.Dispose();

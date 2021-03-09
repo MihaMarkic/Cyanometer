@@ -29,5 +29,9 @@
         /// This is a token used to communicate with Cyanometer web
         /// </summary>
         string CyanoToken { get; }
+        /// <summary>
+        /// Adds additional arguments to raspistill command line photo utility
+        /// </summary>
+        string RaspiStillAdditionalArguments { get; }
     }
 }

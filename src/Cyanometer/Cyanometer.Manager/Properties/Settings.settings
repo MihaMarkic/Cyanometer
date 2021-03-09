@@ -101,5 +101,8 @@
     <Setting Name="CyanoToken" Type="System.String" Scope="Application">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="RaspiStillAdditionalArguments" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">-ISO 100 -awb fluorescent</Value>
+    </Setting>
   </Settings>
 </SettingsFile>
