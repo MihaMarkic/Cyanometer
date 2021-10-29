@@ -1,13 +1,12 @@
-﻿using Autofac;
+﻿using System;
+using System.Diagnostics;
+using System.Net.Http;
+using Autofac;
 using Autofac.Builder;
 using Autofac.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Implementation;
 using Cyanometer.Core.Services.Logging;
-using Righthand.WittyPi;
-using System;
-using System.Diagnostics;
-using System.Net.Http;
 
 namespace Cyanometer.Core
 {
@@ -54,14 +53,14 @@ namespace Cyanometer.Core
             {
                 builder.RegisterType<RaspberryService>().As<IRaspberryService>();
             }
-            if (hasWittyPi)
-            {
-                builder.RegisterType<WittyPiService>().As<IWittyPiService>();
-            }
-            else
-            {
-                builder.RegisterType<FakeWittyPiService>().As<IWittyPiService>();
-            }
+            //if (hasWittyPi)
+            //{
+            //    builder.RegisterType<WittyPiService>().As<IWittyPiService>();
+            //}
+            //else
+            //{
+            //    builder.RegisterType<FakeWittyPiService>().As<IWittyPiService>();
+            //}
             builder.RegisterGeneratedFactory<LoggerFactory>(new TypedService(typeof(ILogger)));
             builder.RegisterType<StopCheckService>().As<IStopCheckService>();
             builder.RegisterType<NtpService>().As<INtpService>();

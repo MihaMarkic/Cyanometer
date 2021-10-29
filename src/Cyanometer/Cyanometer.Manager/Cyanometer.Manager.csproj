@@ -1,141 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{7CCF6F64-21DC-4793-842A-A9FC642687A8}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>Cyanometer.Manager</RootNamespace>
-    <AssemblyName>cyanometer</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.8.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.4.8.1\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="Flurl, Version=2.8.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Flurl.2.8.0\lib\net40\Flurl.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.5.6\lib\net45\NLog.dll</HintPath>
-    </Reference>
-    <Reference Include="Raspberry.System, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Github\rasp\Raspberry.IO.GeneralPurpose\bin\Release\Raspberry.System.dll</HintPath>
-    </Reference>
-    <Reference Include="RestSharp, Version=106.3.1.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.106.3.1\lib\net452\RestSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.IO.Compression" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UnixSignalWaiter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\UnixSignalWaiter.0.0.1\lib\UnixSignalWaiter.dll</HintPath>
-    </Reference>
+    <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="NLog" Version="4.7.12" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Interop.cs" />
-    <Compile Include="IoC.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-    <Compile Include="Services\Abstract\IProcessor.cs" />
-    <Compile Include="Services\Implementation\NLogger.cs" />
-    <Compile Include="Services\Implementation\Processor.cs" />
-    <Compile Include="Settings.cs" />
+    <ProjectReference Include="..\Cyanometer.Core\Cyanometer.Core.csproj" />
+    <ProjectReference Include="..\Cyanometer.Imagging\Cyanometer.Imagging.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="applicationSettings.config" />
-    <None Include="NLog.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\raspberry\Raspberry.IO.GeneralPurpose\Raspberry.IO.GeneralPurpose.csproj">
-      <Project>{281c71ed-c36d-408e-8baa-75c381dc17e7}</Project>
-      <Name>Raspberry.IO.GeneralPurpose</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\raspberry\Raspberry.IO\Raspberry.IO.csproj">
-      <Project>{ace64f17-87e5-43e7-97a0-bdde19059c61}</Project>
-      <Name>Raspberry.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\raspberry\Righthand.WittyPi\Righthand.WittyPi.csproj">
-      <Project>{2d1ae71f-6029-44e2-bfc1-d4f16da29624}</Project>
-      <Name>Righthand.WittyPi</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cyanometer.AirQuality\Cyanometer.AirQuality.csproj">
-      <Project>{66fefc95-3793-4738-907d-860d0f87ac26}</Project>
-      <Name>Cyanometer.AirQuality</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cyanometer.Core\Cyanometer.Core.csproj">
-      <Project>{ff00db63-a7ed-47c8-8bc6-5bcde5e41ccb}</Project>
-      <Name>Cyanometer.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cyanometer.Imagging\Cyanometer.Imagging.csproj">
-      <Project>{f2c3c9d7-1f87-47eb-b008-849fff792bde}</Project>
-      <Name>Cyanometer.Imagging</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Cyanometer.SkyCalculator\Cyanometer.SkyCalculator.csproj">
-      <Project>{b30e7826-8f62-4186-98bc-8cf5ed6f38c1}</Project>
-      <Name>Cyanometer.SkyCalculator</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Exceptionless\src\Exceptionless\Exceptionless.csproj">
-      <Project>{dea761d6-46b1-497f-b8ec-914847e49917}</Project>
-      <Name>Exceptionless</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>if $(ConfigurationName) == Debug (
-copy "$(SolutionDir)Data\applicationSettings.test.config" "$(TargetDir)applicationSettings.config"
-copy "$(SolutionDir)Data\daylight.test.xml" "$(TargetDir)daylight.xml"
-)</PreBuildEvent>
-  </PropertyGroup>
+
 </Project>

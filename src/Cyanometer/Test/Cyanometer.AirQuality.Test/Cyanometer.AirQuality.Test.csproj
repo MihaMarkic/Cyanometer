@@ -62,10 +62,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Cyanometer.AirQuality\Cyanometer.AirQuality.csproj">
-      <Project>{66FEFC95-3793-4738-907D-860D0F87AC26}</Project>
-      <Name>Cyanometer.AirQuality</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Cyanometer.Core\Cyanometer.Core.csproj">
       <Project>{FF00DB63-A7ED-47C8-8BC6-5BCDE5E41CCB}</Project>
       <Name>Cyanometer.Core</Name>

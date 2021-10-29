@@ -13,7 +13,6 @@ namespace Cyanometer.Core.Services.Implementation
     public class CyanoUploaderService: IUploaderService
     {
         readonly ILogger logger;
-        readonly ISettings settings;
         readonly HttpClient client;
 #if DEBUG
         const string RootUrl = "http://localhost:5000";
@@ -21,13 +20,12 @@ namespace Cyanometer.Core.Services.Implementation
         const string RootUrl = "https://cyanometer.net";
 #endif
 
-        public CyanoUploaderService(LoggerFactory loggerFactory, ISettings settings, HttpClient client)
+        public CyanoUploaderService(LoggerFactory loggerFactory, HttpClient client)
         {
             logger = loggerFactory(nameof(CyanoUploaderService));
-            this.settings = settings;
             this.client = client;
         }
-        public async Task<string> UploadAsync(DateTime date, string filename, CancellationToken ct)
+        public async Task<string> UploadAsync(Settings settings, DateTime date, string filename, CancellationToken ct)
         {
             logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Uploading to Cyano web").Commit();
             try
@@ -37,7 +35,7 @@ namespace Cyanometer.Core.Services.Implementation
                 CancellationTokenSource ctsUpload = new CancellationTokenSource();
                 using (var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(ctsUpload.Token, ct))
                 {
-                    var uploadTask = UploadAsync(filename, settings.CyanoToken, linkedCts.Token);
+                    var uploadTask = UploadAsync(settings, filename, settings.CyanoToken, linkedCts.Token);
 
                     //var timeoutTask = Task.Delay(TimeSpan.FromMinutes(5));
                     //var finishedTask = await Task.WhenAny(uploadTask, timeoutTask);
@@ -64,7 +62,7 @@ namespace Cyanometer.Core.Services.Implementation
             }
         }
 
-        async Task UploadAsync(string filename, string token, CancellationToken ct)
+        async Task UploadAsync(Settings settings, string filename, string token, CancellationToken ct)
         {
             var requestContent = new MultipartFormDataContent();
             //    here you can specify boundary if you need---^

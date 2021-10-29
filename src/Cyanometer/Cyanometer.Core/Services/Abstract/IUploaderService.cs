@@ -6,6 +6,6 @@ namespace Cyanometer.Core.Services.Abstract
 {
     public interface IUploaderService
     {
-        Task<string> UploadAsync(DateTime date, string filename, CancellationToken ct);
+        Task<string> UploadAsync(Settings settings, DateTime date, string filename, CancellationToken ct);
     }
 }

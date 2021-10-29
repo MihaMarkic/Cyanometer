@@ -1,89 +1,82 @@
-﻿using Cyanometer.AirQuality.Services.Abstract;
-using Cyanometer.Core.Core;
-using Cyanometer.Core.Services.Abstract;
-using Cyanometer.Core.Services.Logging;
-using Cyanometer.Imagging.Services.Abstract;
-using Cyanometer.Manager.Services.Abstract;
-using Exceptionless;
-using Righthand.WittyPi;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using UnixSignalWaiter;
+using Cyanometer.Core;
+using Cyanometer.Core.Services.Abstract;
+using Cyanometer.Core.Services.Logging;
+using Cyanometer.Imagging.Services.Abstract;
+using Cyanometer.Manager.Services.Abstract;
 
 namespace Cyanometer.Manager.Services.Implementation
 {
     public class Processor : IProcessor
     {
-        private readonly ILogger logger;
-        private readonly ISettings settings;
-        private readonly IImageProcessor imageProcessor;
-        private readonly IWittyPiService wittyPiService;
-        private readonly INtpService ntpService;
-        private readonly IStopCheckService stopCheckService;
-        private readonly IAirQualityProcessor airQualityProcessor;
+        readonly ILogger logger;
+        readonly IImageProcessor imageProcessor;
+        //private readonly IWittyPiService wittyPiService;
+        readonly INtpService ntpService;
+        readonly IStopCheckService stopCheckService;
+        //private readonly IAirQualityProcessor airQualityProcessor;
         readonly IHeartbeatService heartbeatService;
-        private CancellationTokenSource cts;
-        DateTime referenceNow;
+        //DateTime referenceNow;
         Stopwatch elapsedSinceReference;
 
-        public Processor(LoggerFactory loggerFactory, ISettings settings, IImageProcessor imageProcessor, IWittyPiService wittyPiService,
-            INtpService ntpService, IStopCheckService stopCheckService, IAirQualityProcessor airQualityProcessor, IHeartbeatService heartbeatService)
+        public Processor(LoggerFactory loggerFactory, IImageProcessor imageProcessor, // IWittyPiService wittyPiService,
+            INtpService ntpService, IStopCheckService stopCheckService, IHeartbeatService heartbeatService) // IAirQualityProcessor airQualityProcessor, 
         {
             this.logger = loggerFactory(nameof(Processor));
-            this.settings = settings;
             this.imageProcessor = imageProcessor;
-            this.wittyPiService = wittyPiService;
+            //this.wittyPiService = wittyPiService;
             this.ntpService = ntpService;
             this.stopCheckService = stopCheckService;
-            this.airQualityProcessor = airQualityProcessor;
+            //this.airQualityProcessor = airQualityProcessor;
             this.heartbeatService = heartbeatService;
         }
-        public void Process()
+        public async Task ProcessAsync(Settings settings, CancellationToken ct = default)
         {
             logger.LogInfo().WithMessage($"Cyanometer Manager v{typeof(Processor).Assembly.GetName().Version}").Commit();
-            cts = new CancellationTokenSource();
-            var ct = cts.Token;
+            //cts = new CancellationTokenSource();
+            //var ct = cts.Token;
 
-            Console.CancelKeyPress += (s, e) =>
-            {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Waiting for cancel to finish").Commit();
-                cts.Cancel();
-                e.Cancel = true;
-            };
-            if (SignalWaiter.Instance.CanWaitExitSignal())
-            {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Will wait for SIGTERM as well").Commit();
-                Task.Factory.StartNew(a =>
-                {
-                    SignalWaiter.Instance.WaitExitSignal();
-                    cts.Cancel();
-                    logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage("Received SIGTERM").Commit();
-                }, ct, TaskCreationOptions.LongRunning);
-            }
+            //Console.CancelKeyPress += (s, e) =>
+            //{
+            //    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Waiting for cancel to finish").Commit();
+            //    cts.Cancel();
+            //    e.Cancel = true;
+            //};
+            //if (SignalWaiter.Instance.CanWaitExitSignal())
+            //{
+            //    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Will wait for SIGTERM as well").Commit();
+            //    Task.Factory.StartNew(a =>
+            //    {
+            //        SignalWaiter.Instance.WaitExitSignal();
+            //        cts.Cancel();
+            //        logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage("Received SIGTERM").Commit();
+            //    }, ct, TaskCreationOptions.LongRunning);
+            //}
             try
             {
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Syncing mode:" + (settings.SyncWithNntp ? "with NNTP" : "using RTC time only")).Commit();
                 elapsedSinceReference = Stopwatch.StartNew();
-                PrepareForLoopAsync(ct).Wait(ct);
+                await PrepareForLoopAsync(settings, ct);
                 if (settings.SendHeartbeat)
                 {
-                    heartbeatService.SendHeartbeatAsync(ct).GetAwaiter().GetResult();
+                    await heartbeatService.SendHeartbeatAsync(settings, ct);
                 }
                 bool shouldLoop = settings.CycleWaitMinutes > 0;
                 do
                 {
                     DateTime now = DateTime.Now;
-                    Loop(ct);
+                    await LoopAsync(settings, ct);
                     var delay = new TimeSpan(0, settings.CycleWaitMinutes, 0) - (DateTime.Now - now);
                     if (shouldLoop)
                     {
                         logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Will cycle wait for {delay}").Commit();
                         if (delay.TotalSeconds > 0)
                         {
-                            Task.Delay(delay, ct).Wait(ct);
+                            await Task.Delay(delay, ct);
                         }
                     }
                 } while (shouldLoop);
@@ -97,22 +90,22 @@ namespace Cyanometer.Manager.Services.Implementation
                 logger.LogError().WithCategory(LogCategory.Manager).WithMessage("Hard core failure").WithException(ex).Commit();
             }
 
-            if (settings.ExceptionlessEnabled)
-            {
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Flushing Exceptionless").Commit();
-                ExceptionlessClient.Default.ProcessQueue();
-            }
+           // if (settings.ExceptionlessEnabled)
+           // {
+           //     logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Flushing Exceptionless").Commit();
+           //     //ExceptionlessClient.Default.ProcessQueue();
+           // }
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("All done, exiting").Commit();
         }
-        public async Task PrepareForLoopAsync(CancellationToken ct)
+        public async Task PrepareForLoopAsync(Settings settings, CancellationToken ct)
         {
-            var currentSleep = await Retrier.RetryAsync(() => wittyPiService.Sleep, logger, "Read Sleep", ct);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Sleep at boot is set to day {currentSleep.Day} {currentSleep.Hour}:{currentSleep.Min:00}").Commit();
-            await Retrier.RetryAsync(() =>
-            {
-                referenceNow = wittyPiService.RtcDateTime;
-            }, logger, int.MaxValue, "Read RTC", true, ct);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) set to : {referenceNow.ToLocalTime()}").Commit();
+            //var currentSleep = await Retrier.RetryAsync(() => wittyPiService.Sleep, logger, "Read Sleep", ct);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Sleep at boot is set to day {currentSleep.Day} {currentSleep.Hour}:{currentSleep.Min:00}").Commit();
+            //await Retrier.RetryAsync(() =>
+            //{
+            //    referenceNow = wittyPiService.RtcDateTime;
+            //}, logger, int.MaxValue, "Read RTC", true, ct);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) set to : {referenceNow.ToLocalTime()}").Commit();
             if (settings.InitialDelay > 0)
             {
                 TimeSpan initialDelay = TimeSpan.FromMinutes(settings.InitialDelay);
@@ -120,59 +113,60 @@ namespace Cyanometer.Manager.Services.Implementation
                 await Task.Delay(initialDelay, ct);
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Safe waiting done").Commit();
             }
-            if (settings.SleepMinutes > 0 && settings.SyncWithNntp)
-            {
-                await SetSystemTimeAsync(ct);
-            }
+            //if (settings.SleepMinutes > 0 && settings.SyncWithNntp)
+            //{
+            //    await SetSystemTimeAsync(ct);
+            //}
         }
 
-        public async Task SetSystemTimeAsync(CancellationToken ct)
+        public Task SetSystemTimeAsync(CancellationToken ct)
         {
-            DateTime now = DateTime.UtcNow;
-            try
-            {
-                await Retrier.RetryAsync(() =>
-                {
-                    now = ntpService.GetNetworkTime();
-                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
-                    now = now.ToUniversalTime();
-                }, logger, 10, "Read NTP", true, ct);
-                SetSystemTime(now);
-                await Retrier.RetryAsync(() =>
-                {
-                    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Writing to RTC").Commit();
-                    wittyPiService.RtcDateTime = now;
-                }, logger, int.MaxValue, "Read RTC", true, ct);
-            }
-            catch (Exception ex)
-            {
-                now = DateTime.UtcNow;
-                logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage($"Failed to read NTP or set it, will use local {now}")
-                    .WithException(ex).Commit();
-            }
-            referenceNow = now.AddMinutes(-settings.InitialDelay);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) reset to : {referenceNow.ToLocalTime()}").Commit();
+            //DateTime now = DateTime.UtcNow;
+            //try
+            //{
+            //    await Retrier.RetryAsync(() =>
+            //    {
+            //        now = ntpService.GetNetworkTime();
+            //        logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"NTP time: {now} UTC: {now.ToUniversalTime()}").Commit();
+            //        now = now.ToUniversalTime();
+            //    }, logger, 10, "Read NTP", true, ct);
+            //    SetSystemTime(now);
+            //    await Retrier.RetryAsync(() =>
+            //    {
+            //        logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Writing to RTC").Commit();
+            //        wittyPiService.RtcDateTime = now;
+            //    }, logger, int.MaxValue, "Read RTC", true, ct);
+            //}
+            //catch (Exception ex)
+            //{
+            //    now = DateTime.UtcNow;
+            //    logger.LogWarn().WithCategory(LogCategory.Manager).WithMessage($"Failed to read NTP or set it, will use local {now}")
+            //        .WithException(ex).Commit();
+            //}
+            //referenceNow = now.AddMinutes(-settings.InitialDelay);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC (referenceNow) reset to : {referenceNow.ToLocalTime()}").Commit();
+            return Task.CompletedTask;
         }
 
-        public void Loop(CancellationToken ct)
+        public async Task LoopAsync(Settings settings, CancellationToken ct)
         {
             var loops = new List<Task>(2);
-            Task<bool> canShutdownTask = settings.SleepMinutes > 0 ? stopCheckService.CanShutdownAsync(ct) : null;
+            //Task<bool> canShutdownTask = settings.SleepMinutes > 0 ? stopCheckService.CanShutdownAsync(ct) : null;
             if (settings.ProcessImages)
             {
-                var imageProcessorTask = imageProcessor.LoopAsync(ct);
+                var imageProcessorTask = imageProcessor.LoopAsync(settings, ct);
                 loops.Add(imageProcessorTask);
                 logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Image processing is enabled").Commit();
             }
-            if (settings.ProcessAirQuality)
-            {
-                var airQualityProcessorTask = airQualityProcessor.LoopAsync(ct);
-                loops.Add(airQualityProcessorTask);
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("AirQuality processing is enabled").Commit();
-            }
+            //if (settings.ProcessAirQuality)
+            //{
+            //    var airQualityProcessorTask = airQualityProcessor.LoopAsync(ct);
+            //    loops.Add(airQualityProcessorTask);
+            //    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("AirQuality processing is enabled").Commit();
+            //}
             try
             {
-                Task.WhenAll(loops).Wait(ct);
+                await Task.WhenAll(loops);
             }
             catch (OperationCanceledException)
             {
@@ -183,49 +177,51 @@ namespace Cyanometer.Manager.Services.Implementation
             {
                 logger.LogError().WithCategory(LogCategory.Manager).WithMessage("General failure").WithException(ex).Commit();
             }
-            bool canShutdown = canShutdownTask?.Result ?? false;
-            if (canShutdown && settings.SleepMinutes > 0)
-            {
-                SystemWakeUpAsync(referenceNow, elapsedSinceReference.Elapsed, ct).Wait(ct);
-                SystemSleepAsync(referenceNow, elapsedSinceReference.Elapsed, ct).Wait(ct);
-            }
+            //bool canShutdown = canShutdownTask?.Result ?? false;
+            //if (canShutdown && settings.SleepMinutes > 0)
+            //{
+            //    SystemWakeUpAsync(referenceNow, elapsedSinceReference.Elapsed, ct).Wait(ct);
+            //    SystemSleepAsync(referenceNow, elapsedSinceReference.Elapsed, ct).Wait(ct);
+            //}
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Exiting").Commit();
         }
-        public async Task SystemWakeUpAsync(DateTime start, TimeSpan elapsed, CancellationToken ct)
+        public Task SystemWakeUpAsync(DateTime start, TimeSpan elapsed, CancellationToken ct)
         {
-            DateTime wakeUpTime = start.AddMinutes(settings.SleepMinutes);
-            DateTime now = start + elapsed;
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC: {now.ToLocalTime()}, wakeup at {wakeUpTime.ToLocalTime()} elapsed since start {elapsed}").Commit();
-            await Retrier.RetryAsync(() =>
-            {
-                wittyPiService.WakeUp = WakeUpDateTime.Hourly((byte)wakeUpTime.Minute, (byte)wakeUpTime.Second);
-                var wakeUp = wittyPiService.WakeUp;
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Read Wakeup is {wakeUp.Day} {wakeUp.Hour}:{wakeUp.Min:00}.{wakeUp.Sec:00}").Commit();
-                if (wakeUp.Day.HasValue || wakeUp.Hour.HasValue || wakeUp.Min != wakeUpTime.Minute || wakeUp.Sec != wakeUpTime.Second)
-                {
-                    throw new Exception("Read Wakeup date doesn't match");
-                }
-            }, logger, int.MaxValue, "Setting wakeup", true, ct);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("WakeUp set").Commit();
+            //DateTime wakeUpTime = start.AddMinutes(settings.SleepMinutes);
+            //DateTime now = start + elapsed;
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"RTC: {now.ToLocalTime()}, wakeup at {wakeUpTime.ToLocalTime()} elapsed since start {elapsed}").Commit();
+            //await Retrier.RetryAsync(() =>
+            //{
+            //    wittyPiService.WakeUp = WakeUpDateTime.Hourly((byte)wakeUpTime.Minute, (byte)wakeUpTime.Second);
+            //    var wakeUp = wittyPiService.WakeUp;
+            //    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Read Wakeup is {wakeUp.Day} {wakeUp.Hour}:{wakeUp.Min:00}.{wakeUp.Sec:00}").Commit();
+            //    if (wakeUp.Day.HasValue || wakeUp.Hour.HasValue || wakeUp.Min != wakeUpTime.Minute || wakeUp.Sec != wakeUpTime.Second)
+            //    {
+            //        throw new Exception("Read Wakeup date doesn't match");
+            //    }
+            //}, logger, int.MaxValue, "Setting wakeup", true, ct);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("WakeUp set").Commit();
+            return Task.CompletedTask;
         }
-        public async Task SystemSleepAsync(DateTime start, TimeSpan elapsed, CancellationToken ct)
+        public Task SystemSleepAsync(DateTime start, TimeSpan elapsed, CancellationToken ct)
         {
-            DateTime now = start + elapsed;
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Shutting down").Commit();
-            const int sleepDelaySeconds = 100;
-            var sleep = now.AddSeconds(sleepDelaySeconds);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Going to sleep in {sleepDelaySeconds} secs at {sleep.ToLocalTime()} aka {sleep.Day} {sleep.Hour}:{sleep.Minute:00}").Commit();
-            await Retrier.RetryAsync(() =>
-            {
-                wittyPiService.Sleep = new SleepDateTime((byte)sleep.Day, (byte)sleep.Hour, (byte)sleep.Minute);
-                var currentSleep = wittyPiService.Sleep;
-                logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Sleep set to day {currentSleep.Day} {currentSleep.Hour}:{currentSleep.Min:00}").Commit();
-                if (currentSleep.Day != sleep.Day || currentSleep.Hour != sleep.Hour || currentSleep.Min != sleep.Minute)
-                {
-                    throw new Exception("Read Sleep date doesn't match");
-                }
-            }, logger, int.MaxValue, "Setting sleep", true, ct);
-            logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Sleep set").Commit();
+            //DateTime now = start + elapsed;
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Shutting down").Commit();
+            //const int sleepDelaySeconds = 100;
+            //var sleep = now.AddSeconds(sleepDelaySeconds);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Going to sleep in {sleepDelaySeconds} secs at {sleep.ToLocalTime()} aka {sleep.Day} {sleep.Hour}:{sleep.Minute:00}").Commit();
+            //await Retrier.RetryAsync(() =>
+            //{
+            //    wittyPiService.Sleep = new SleepDateTime((byte)sleep.Day, (byte)sleep.Hour, (byte)sleep.Minute);
+            //    var currentSleep = wittyPiService.Sleep;
+            //    logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage($"Sleep set to day {currentSleep.Day} {currentSleep.Hour}:{currentSleep.Min:00}").Commit();
+            //    if (currentSleep.Day != sleep.Day || currentSleep.Hour != sleep.Hour || currentSleep.Min != sleep.Minute)
+            //    {
+            //        throw new Exception("Read Sleep date doesn't match");
+            //    }
+            //}, logger, int.MaxValue, "Setting sleep", true, ct);
+            //logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Sleep set").Commit();
+            return Task.CompletedTask;
         }
 
         public void SetSystemTime(DateTime date)

@@ -1,4 +1,5 @@
-﻿using Cyanometer.Core.Services.Abstract;
+﻿using Cyanometer.Core;
+using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
 using Cyanometer.Imagging.Services.Abstract;
 //using Exceptionless;
@@ -14,24 +15,22 @@ namespace Cyanometer.Imagging.Services.Implementation
     {
         private string imagePath;
         private readonly ILogger logger;
-        private readonly ISettings settings;
         private readonly IDaylightManager daylightManager;
         private readonly IFileService fileService;
         private readonly IRaspberryService raspberry;
         private readonly IUploaderService uploader;
 
-        public ImageProcessor(LoggerFactory loggerFactory, ISettings settings, IDaylightManager daylightManager, IFileService fileService,
+        public ImageProcessor(LoggerFactory loggerFactory, IDaylightManager daylightManager, IFileService fileService,
             IRaspberryService raspberry, IUploaderService uploader)
         {
             logger = loggerFactory(nameof(ImageProcessor));
-            this.settings = settings;
             this.daylightManager = daylightManager;
             this.fileService = fileService;
             this.raspberry = raspberry;
             this.uploader = uploader;
         }
 
-        public async Task LoopAsync(CancellationToken ct)
+        public async Task LoopAsync(Settings settings, CancellationToken ct)
         {
             logger.LogInfo().WithCategory(LogCategory.Manager).WithMessage("Images processor started").Commit();
             try
@@ -39,7 +38,7 @@ namespace Cyanometer.Imagging.Services.Implementation
                 imagePath = Path.Combine(Path.GetDirectoryName(typeof(ImageProcessor).Assembly.Location), "Images");
                 fileService.CreateDirectory(imagePath);
 
-                await UploadAllAsync(ct);
+                await UploadAllAsync(settings, ct);
 
                 if (daylightManager.IsDay())
                 {
@@ -52,9 +51,9 @@ namespace Cyanometer.Imagging.Services.Implementation
                         // write index                    
                         string largeFileName = GetFullImageFileName(imageName, "large", "jpg");
 
-                        await raspberry.TakePhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
+                        await raspberry.TakePhotoAsync(settings, largeFileName, size: new Size(1920, 1080), ct: ct);
 
-                        await UploadGroupAsync(largeFileName, ct);
+                        await UploadGroupAsync(settings, largeFileName, ct);
                     }
                     catch (OperationCanceledException) { }
                     catch (Exception ex)
@@ -73,7 +72,7 @@ namespace Cyanometer.Imagging.Services.Implementation
             }
         }
 
-        public async Task UploadAllAsync(CancellationToken ct)
+        public async Task UploadAllAsync(Settings settings, CancellationToken ct)
         {
             logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Starting upload all files").Commit();
             try
@@ -84,7 +83,7 @@ namespace Cyanometer.Imagging.Services.Implementation
                     logger.LogInfo().WithCategory(LogCategory.ImageProcessor).WithMessage($"Found {photos.Length} old index files for upload").Commit();
                     foreach (string photo in photos)
                     {
-                        await UploadGroupAsync(photo, ct);
+                        await UploadGroupAsync(settings, photo, ct);
                     }
                 }
                 else
@@ -102,7 +101,7 @@ namespace Cyanometer.Imagging.Services.Implementation
             }
         }
 
-        public async Task UploadGroupAsync(string largeFilePath, CancellationToken ct)
+        public async Task UploadGroupAsync(Settings settings, string largeFilePath, CancellationToken ct)
         {
             string fileName = Path.GetFileName(largeFilePath);
             logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Uploading group {fileName}").Commit();
@@ -117,7 +116,7 @@ namespace Cyanometer.Imagging.Services.Implementation
                 if (largeFileExists)
                 {
                     logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Uploading large file {fileName}").Commit();
-                    string imageUrl = await uploader.UploadAsync(photoDate, largeFilePath, ct);
+                    string imageUrl = await uploader.UploadAsync(settings, photoDate, largeFilePath, ct);
                     logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Large file {fileName} uploaded").Commit();
                     logger.LogDebug().WithCategory(LogCategory.ImageProcessor).WithMessage($"Deleting file").Commit();
                     fileService.Delete(largeFilePath);

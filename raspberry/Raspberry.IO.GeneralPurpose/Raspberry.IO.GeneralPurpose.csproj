@@ -80,10 +80,6 @@
       <Project>{689cb6c4-3d23-45da-8e00-87c28aea32d0}</Project>
       <Name>Raspberry.IO.Interop</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Raspberry.IO\Raspberry.IO.csproj">
-      <Project>{ace64f17-87e5-43e7-97a0-bdde19059c61}</Project>
-      <Name>Raspberry.IO</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Raspberry.System\Raspberry.System.csproj">
       <Project>{2c0c9aaf-4edd-4c79-961b-e7bc4fc4eb0c}</Project>
       <Name>Raspberry.System</Name>

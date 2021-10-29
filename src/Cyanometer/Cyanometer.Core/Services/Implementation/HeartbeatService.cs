@@ -11,15 +11,13 @@ namespace Cyanometer.Core.Services.Implementation
     public class HeartbeatService : IHeartbeatService
     {
         readonly ILogger logger;
-        readonly ISettings settings;
         readonly HttpClient client;
-        public HeartbeatService(LoggerFactory loggerFactory, ISettings settings, HttpClient client)
+        public HeartbeatService(LoggerFactory loggerFactory, HttpClient client)
         {
             logger = loggerFactory(nameof(HeartbeatService)); ;
-            this.settings = settings;
             this.client = client;
         }
-        public async Task SendHeartbeatAsync(CancellationToken ct)
+        public async Task SendHeartbeatAsync(Settings settings, CancellationToken ct)
         {
             logger.LogInfo().WithCategory(LogCategory.System).WithMessage("Sending heartbeat").Commit();
             try

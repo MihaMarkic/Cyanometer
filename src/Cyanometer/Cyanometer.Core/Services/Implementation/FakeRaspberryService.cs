@@ -13,7 +13,7 @@ namespace Cyanometer.Core.Services.Implementation
         {
             logger = loggerFactory(nameof(FakeRaspberryService));
         }
-        public Task TakePhotoAsync(string filename, Size? size, CancellationToken ct)
+        public Task TakePhotoAsync(Settings settings, string filename, Size? size, CancellationToken ct)
         {
             using (Bitmap bm = new Bitmap(size?.Width ?? 640, size?.Height ?? 400))
             using (var g = Graphics.FromImage(bm))

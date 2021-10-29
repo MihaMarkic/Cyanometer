@@ -6,6 +6,6 @@ namespace Cyanometer.Core.Services.Abstract
 {
     public interface IRaspberryService
     {
-        Task TakePhotoAsync(string filename, Size? size, CancellationToken ct);
+        Task TakePhotoAsync(Settings settings, string filename, Size? size, CancellationToken ct);
     }
 }

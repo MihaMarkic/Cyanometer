@@ -11,13 +11,11 @@ namespace Cyanometer.Core.Services.Implementation
     public class RaspberryService : IRaspberryService
     {
         readonly ILogger logger;
-        readonly ISettings settings;
-        public RaspberryService(LoggerFactory loggerFactory, ISettings settings)
+        public RaspberryService(LoggerFactory loggerFactory)
         {
             logger = loggerFactory(nameof(RaspberryService));
-            this.settings = settings;
         }
-        public Task TakePhotoAsync(string filename, Size? size, CancellationToken ct)
+        public Task TakePhotoAsync(Settings settings, string filename, Size? size, CancellationToken ct)
         {
             TaskCompletionSource<object> tcs = new TaskCompletionSource<object>();
             try

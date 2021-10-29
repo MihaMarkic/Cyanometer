@@ -13,7 +13,7 @@ namespace Cyanometer.Core.Services.Implementation
         {
             logger = loggerFactory(nameof(FakeCyanoUploaderService));
         }
-        public Task<string> UploadAsync(DateTime date, string filename, CancellationToken ct)
+        public Task<string> UploadAsync(Settings settings, DateTime date, string filename, CancellationToken ct)
         {
             logger.LogDebug().WithCategory(LogCategory.System).WithMessage($"Fake Cynao upload for {filename} on {date} completed").Commit();
             return Task.FromResult("nekje");

@@ -6,6 +6,6 @@ namespace Cyanometer.Core.Services.Abstract
 {
     public interface IHeartbeatService
     {
-        Task SendHeartbeatAsync(CancellationToken ct);
+        Task SendHeartbeatAsync(Settings settings, CancellationToken ct);
     }
 }
