@@ -5,6 +5,7 @@ using Exceptionless;
 using NLog;
 using NLog.Common;
 using System;
+using System.Net;
 
 namespace Cyanometer.Manager
 {
@@ -14,6 +15,11 @@ namespace Cyanometer.Manager
         {
             //InternalLogger.LogToConsole = true;
             //InternalLogger.LogLevel = LogLevel.Trace;
+
+            // TODO problems on some raspberries that are refusing valid certificates
+            ServicePointManager
+                .ServerCertificateValidationCallback +=
+                (sender, cert, chain, sslPolicyErrors) => true;
 
             var exceptConfig = ExceptionlessClient.Default.Configuration;
             exceptConfig.Enabled = Settings.Default.ExceptionlessEnabled;
