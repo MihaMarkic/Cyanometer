@@ -6,7 +6,12 @@ enable camera (raspi-config)
 expand partition (raspi-config)
 
 ## Install OpenVPN
-[Create key](https://hub.docker.com/r/kylemanna/openvpn/) with no password.
+[Create key](https://hub.docker.com/r/kylemanna/openvpn/) with no password: 
+
+```
+easyrsa build-client-full CLIENTNAME nopas
+ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
+```
 
 Can use `docker-compose run openvpn bash`  and then commands.
 
