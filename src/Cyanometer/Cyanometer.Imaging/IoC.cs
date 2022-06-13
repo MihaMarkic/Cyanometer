@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using Cyanometer.Imagging.Services.Abstract;
-using Cyanometer.Imagging.Services.Implementation;
+using Cyanometer.Imaging.Services.Abstract;
+using Cyanometer.Imaging.Services.Implementation;
 
-namespace Cyanometer.Imagging
+namespace Cyanometer.Imaging
 {
     public static class IoC
     {

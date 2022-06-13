@@ -1,6 +1,6 @@
 ﻿using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
-using Cyanometer.Imagging.Services.Abstract;
+using Cyanometer.Imaging.Services.Abstract;
 //using Exceptionless;
 using System;
 using System.Drawing;
@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cyanometer.Imagging.Services.Implementation
+namespace Cyanometer.Imaging.Services.Implementation
 {
     public class ImageProcessor : IImageProcessor
     {

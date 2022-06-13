@@ -2,7 +2,7 @@
 using Cyanometer.Core.Core;
 using Cyanometer.Core.Services.Abstract;
 using Cyanometer.Core.Services.Logging;
-using Cyanometer.Imagging.Services.Abstract;
+using Cyanometer.Imaging.Services.Abstract;
 using Cyanometer.Manager.Services.Abstract;
 using Exceptionless;
 using Righthand.WittyPi;

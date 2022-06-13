@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cyanometer.Imagging.Services.Abstract
+namespace Cyanometer.Imaging.Services.Abstract
 {
     public interface IImageProcessor
     {

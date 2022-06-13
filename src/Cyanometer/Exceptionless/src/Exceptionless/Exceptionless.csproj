@@ -7,7 +7,8 @@
     <AssemblyTitle>Exceptionless client for non visual (ie. Console and Services) applications.</AssemblyTitle>
     <Description>Exceptionless client for portable applications. $(Description)</Description>
     <PackageTags>Exceptionless;Error;Report;Reporting;Exception;Logging;Log;ELMAH;pcl;NETSTANDARD;Core</PackageTags>
-    <TargetFrameworks>netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;net45</TargetFrameworks>
+    <!--<TargetFrameworks>netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;net45</TargetFrameworks>-->
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
     
   <ItemGroup Label="Package">
@@ -29,7 +30,7 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.2'" Label="Build">
+  <!--<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.2'" Label="Build">
     <DefineConstants>$(DefineConstants);NO_SQL_CLIENT;NETSTANDARD;NETSTANDARD1_2</DefineConstants>
   </PropertyGroup>
 
@@ -149,13 +150,13 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Xml.ReaderWriter" />
     <Reference Include="System.Xml.XDocument" />
-  </ItemGroup>
+  </ItemGroup>-->
 
-  <PropertyGroup Condition="'$(TargetFramework)' == 'net45'" Label="Build">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'" Label="Build">
     <DefineConstants>$(DefineConstants);NET45</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net45'" Label="Framework References">
+  <ItemGroup Condition="'$(TargetFramework)' == 'net461'" Label="Framework References">
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />

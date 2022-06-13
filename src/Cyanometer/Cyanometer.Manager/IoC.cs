@@ -15,7 +15,7 @@ namespace Cyanometer.Manager
             ContainerBuilder builder = new ContainerBuilder();
             Core.IoCRegistrar.Register(Settings.Default.UseFakeRaspberry, Settings.Default.HasWittyPi, builder);
             SkyCalculator.IoC.Register(builder);
-            Imagging.IoC.Register(builder);
+            Imaging.IoC.Register(builder);
             AirQuality.IoC.Register(Settings.Default.UseFakeRaspberry, Settings.Default.AirQualitySource, builder);
             builder.RegisterType<NLogger>().As<ILogger>();
             builder.Register(c => Settings.Default)

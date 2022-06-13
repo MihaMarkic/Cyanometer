@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29806.167
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Manager", "Cyanometer.Manager\Cyanometer.Manager.csproj", "{7CCF6F64-21DC-4793-842A-A9FC642687A8}"
 EndProject
@@ -15,7 +15,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Other", "Other", "{20576742
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Imagging", "Cyanometer.Imagging\Cyanometer.Imagging.csproj", "{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.Imaging", "Cyanometer.Imaging\Cyanometer.Imaging.csproj", "{F2C3C9D7-1F87-47EB-B008-849FFF792BDE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyanometer.SkyCalculator", "Cyanometer.SkyCalculator\Cyanometer.SkyCalculator.csproj", "{B30E7826-8F62-4186-98BC-8CF5ED6F38C1}"
 EndProject
