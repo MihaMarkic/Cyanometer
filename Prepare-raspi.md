@@ -39,6 +39,9 @@ Install dirmngr
 [Install Mono on Raspbian](http://www.mono-project.com/download/#download-lin-raspbian)
 Also install `mono-vbnc`
 
+Also install Let's encyrpt root certificate as trusted.
+Open https://misc.rthand.com/ certificate (in Firefox), download chain as pem to raspbery (also stored in `Data` directory) and call `sudo cert-sync cyanowatch-rthand-com-chain.pem` (perhaps more than once)
+
 ## Install WittyPI software if required
 [Installation](http://www.uugear.com/product/witty-pi-realtime-clock-and-power-management-for-raspberry-pi/)
 
