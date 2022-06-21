@@ -21,7 +21,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
         /// </summary>
         /// <remarks>Got from https://api.gios.gov.pl/pjp-api/rest/station/findAll - Wrocław - Korzeniowskiego</remarks>
         public const int WroclawStationId = 117;
-        public GiosAirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client) :
+        public GiosAirQualityService(LoggerFactory loggerFactory, IAirQualitySettings settings, RestClient client) :
             base(loggerFactory, settings, client, "https://api.gios.gov.pl/pjp-api/rest/")
         {
         }
@@ -74,9 +74,9 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
 
         public async Task<Measurements> GetDataAsync(int sensorId, CancellationToken ct)
         {
-            var request = new RestRequest($"data/getData/{sensorId}", Method.GET);
+            var request = new RestRequest($"data/getData/{sensorId}", Method.Get);
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensorId for {request.Resource}").Commit();
-            var response = await client.ExecuteGetTaskAsync(request, ct);
+            var response = await client.ExecuteGetAsync(request, ct);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage($"Failed retrieving Wroclaw GIOS raw data: {response.ErrorMessage}").Commit();
@@ -88,9 +88,9 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
 
         public async Task<SensorResult[]> GetSensorsAsync(CancellationToken ct)
         {
-            var request = new RestRequest($"station/sensors/{WroclawStationId}", Method.GET);
+            var request = new RestRequest($"station/sensors/{WroclawStationId}", Method.Get);
             logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage($"Getting sensors for {request.Resource}").Commit();
-            var response = await client.ExecuteGetTaskAsync(request, ct);
+            var response = await client.ExecuteGetAsync(request, ct);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage("Failed retrieving Wroclaw GIOS sensors meta data: {response.ErrorMessage}").Commit();

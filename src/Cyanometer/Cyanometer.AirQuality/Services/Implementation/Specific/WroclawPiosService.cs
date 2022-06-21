@@ -16,7 +16,7 @@ namespace Cyanometer.AirQuality.Services.Implementation
 {
     public class WroclawPiosService : AirQualityService, IAirQualityService
     {
-        public WroclawPiosService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client) : 
+        public WroclawPiosService(LoggerFactory loggerFactory, IAirQualitySettings settings, RestClient client) : 
             base(
                 loggerFactory, settings, client,
                 "http://air.wroclaw.pios.gov.pl/dane-pomiarowe/api/automatyczne/stacja/DOL012/12O3_43I-12SO2_43I-12NO2A-12PM10/dzienny/"
@@ -89,10 +89,10 @@ namespace Cyanometer.AirQuality.Services.Implementation
             return newest;
         }
 
-        public async Task<PiosResponse> GetDataAsync(string url, IRestClient client, CancellationToken ct)
+        public async Task<PiosResponse> GetDataAsync(string url, RestClient client, CancellationToken ct)
         {
-            var request = new RestRequest(url, Method.GET);
-            var response = await client.ExecuteGetTaskAsync<PiosResponse>(request, ct);
+            var request = new RestRequest(url, Method.Get);
+            var response = await client.ExecuteGetAsync<PiosResponse>(request, ct);
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage("Failed retrieving Wroclaw Pios raw data for some reason").Commit();

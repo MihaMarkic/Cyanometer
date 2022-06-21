@@ -16,7 +16,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
     public class ArsoService : AirQualityService, IAirQualityService
     {
         private const string Url = "ones_zrak_urni_podatki_zadnji.xml";
-        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings, IRestClient client)
+        public ArsoService(LoggerFactory loggerFactory, IAirQualitySettings settings, RestClient client)
             : base(loggerFactory, settings, client, "http://www.arso.gov.si/xml/zrak/")
         {
         }
@@ -65,11 +65,11 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
             result.CO = GetDoubleValue(station.Element("co"));
             return result;
         }
-
-        public async Task<XDocument> GetDataAsync(IRestClient client, CancellationToken ct)
+        
+        public async Task<XDocument> GetDataAsync(RestClient client, CancellationToken ct)
         {
-            var request = new RestRequest(Url, Method.GET);
-            var response = await client.ExecuteTaskAsync(request, ct);
+            var request = new RestRequest(Url, Method.Get);
+            var response = await client.ExecuteAsync(request, ct);
             var stringReader = new StringReader(response.Content);
             XDocument doc = XDocument.Load(stringReader);
             return doc;

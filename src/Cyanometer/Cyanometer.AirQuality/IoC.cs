@@ -30,7 +30,7 @@ namespace Cyanometer.AirQuality
                     builder.RegisterType<GiosAirQualityService>().As<IAirQualityService>();
                     break;
             }
-            builder.RegisterType<RestClient>().As<IRestClient>();
+            builder.RegisterType<RestClient>();
             builder.RegisterType<TwitterPush>().As<ITwitterPush>();
             builder.RegisterType<AirQualityProcessor>().As<IAirQualityProcessor>();
         }
