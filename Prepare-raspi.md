@@ -12,6 +12,7 @@ expand partition (raspi-config)
 easyrsa build-client-full CLIENTNAME nopas
 ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
 ```
+ca.key password is stored in Keepass under `OVPN ca`.
 
 Can use `docker-compose run openvpn bash`  and then commands.
 
@@ -63,4 +64,6 @@ Add proper `daylight.xml file`
 Add proper `applicationSettings.config`  
 Copy `NLog.config` from *src/Cyanometer/Cyanometer.Manager*
 
-Add entry to /etc/rc.local
+Add entry to /etc/rc.local before last line:
+
+`mono /home/pi/cyano/cyanometer.exe &`
