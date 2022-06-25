@@ -29,6 +29,9 @@ namespace Cyanometer.AirQuality
                 case AirQualitySource.Gios:
                     builder.RegisterType<GiosAirQualityService>().As<IAirQualityService>();
                     break;
+                case AirQualitySource.Sabra:
+                    builder.RegisterType<SabraAirQualityService>().As<IAirQualityService>();
+                    break;
             }
             builder.RegisterType<RestClient>();
             builder.RegisterType<TwitterPush>().As<ITwitterPush>();

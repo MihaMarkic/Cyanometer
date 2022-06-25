@@ -37,6 +37,9 @@
     <Reference Include="CoreTweet, Version=0.9.0.415, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\CoreTweet.0.9.0.415\lib\net45\CoreTweet.dll</HintPath>
     </Reference>
+    <Reference Include="FluentFTP, Version=37.0.3.0, Culture=neutral, PublicKeyToken=f4af092b1d8df44f, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentFTP.37.0.3\lib\net45\FluentFTP.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.5.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -107,6 +110,7 @@
     <Compile Include="Services\Implementation\Specific\ArsoService.cs" />
     <Compile Include="Services\Implementation\FakeShiftRegister.cs" />
     <Compile Include="Services\Implementation\ShiftRegister.cs" />
+    <Compile Include="Services\Implementation\Specific\SabraAirQualityService.cs" />
     <Compile Include="Services\Implementation\Specific\GiosAirQualityService.cs" />
     <Compile Include="Services\Implementation\TwitterPush.cs" />
     <Compile Include="Services\Implementation\Specific\WroclawPiosService.cs" />
