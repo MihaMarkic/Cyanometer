@@ -6,5 +6,6 @@
         WroclawPios,
         Gios,
         Sabra,
+        Aqicn,
     }
 }
