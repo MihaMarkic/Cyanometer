@@ -21,7 +21,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
 
         public async Task<AirQualityData> GetIndexAsync(CancellationToken ct)
         {
-            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Starting retrieving arso data").Commit();
+            logger.LogInfo().WithCategory(LogCategory.AirQuality).WithMessage("Starting retrieving Dresden data").Commit();
             try
             {
                 XDocument doc = await GetDataAsync(ct);
@@ -29,7 +29,7 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
             }
             catch (Exception ex)
             {
-                logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage("Failed retrieving arso data for some reason").WithException(ex).Commit();
+                logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage("Failed retrieving Dresden data for some reason").WithException(ex).Commit();
                 throw;
             }
         }
@@ -63,6 +63,10 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
             const string parameters = "?SERVICE=WFS&REQUEST=GetFeature&VERSION=2.0.0&TYPENAMES=luft_luftmessdaten:Luftmessstationen&TYPENAME=luft_luftmessdaten:Luftmessstationen&STARTINDEX=0&COUNT=1000&SRSNAME=urn:ogc:def:crs:EPSG::25833&BBOX=5431070.18768121488392353,215209.8988020783290267,5848104.34905883856117725,564673.96820965665392578,urn:ogc:def:crs:EPSG::25833";
             var request = new RestRequest(parameters, Method.Get);
             var response = await client.ExecuteAsync(request, ct);
+            if (!response.IsSuccessful)
+            {
+                logger.LogError().WithCategory(LogCategory.AirQuality).WithMessage($"Response from Dresden: {response.StatusCode} {response.ErrorMessage}").Commit();
+            }
             var stringReader = new StringReader(response.Content);
             XDocument doc = XDocument.Load(stringReader);
             return doc;
