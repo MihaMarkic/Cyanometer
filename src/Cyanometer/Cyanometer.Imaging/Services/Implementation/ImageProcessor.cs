@@ -52,7 +52,14 @@ namespace Cyanometer.Imaging.Services.Implementation
                         // write index                    
                         string largeFileName = GetFullImageFileName(imageName, "large", "jpg");
 
-                        await raspberry.TakePhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
+                        if (settings.UseLibcamera)
+                        {
+                            await raspberry.TakeLibcameraPhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
+                        }
+                        else
+                        {
+                            await raspberry.TakePhotoAsync(largeFileName, size: new Size(1920, 1080), ct: ct);
+                        }
 
                         await UploadGroupAsync(largeFileName, ct);
                     }

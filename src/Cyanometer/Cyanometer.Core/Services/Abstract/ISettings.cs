@@ -33,5 +33,9 @@
         /// Adds additional arguments to raspistill command line photo utility
         /// </summary>
         string RaspiStillAdditionalArguments { get; }
+        /// <summary>
+        /// Use Libcamera for taking photos
+        /// </summary>
+        bool UseLibcamera { get; }
     }
 }

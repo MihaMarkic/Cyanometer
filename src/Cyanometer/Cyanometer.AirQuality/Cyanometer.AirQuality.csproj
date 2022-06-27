@@ -113,6 +113,7 @@
     <Compile Include="Services\Implementation\ShiftRegister.cs" />
     <Compile Include="Services\Implementation\Specific\SabraAirQualityService.cs" />
     <Compile Include="Services\Implementation\Specific\GiosAirQualityService.cs" />
+    <Compile Include="Services\Implementation\Specific\SachsenAirQualityService.cs" />
     <Compile Include="Services\Implementation\TwitterPush.cs" />
     <Compile Include="Services\Implementation\Specific\WroclawPiosService.cs" />
     <Compile Include="UploadResponse.cs" />

@@ -161,9 +161,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>if $(ConfigurationName) == Debug (
-copy "$(SolutionDir)Data\applicationSettings.test.config" "$(TargetDir)applicationSettings.config"
-copy "$(SolutionDir)Data\daylight.test.xml" "$(TargetDir)daylight.xml"
-)</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>
