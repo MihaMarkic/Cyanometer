@@ -44,10 +44,17 @@ Also install Let's encyrpt root certificate as trusted.
 Open https://misc.rthand.com/ certificate (in Firefox), download chain as pem to raspbery (also stored in `Data` directory) and call `sudo cert-sync cyanowatch-rthand-com-chain.pem` (perhaps more than once)
 
 ## Install WittyPI software if required
-[Installation](http://www.uugear.com/product/witty-pi-realtime-clock-and-power-management-for-raspberry-pi/)
+[Installation](http://www.uugear.com/product/witty-pi-realtime-clock-and-power-management-for-raspberry-pi/) (old)
 
 `wget http://www.uugear.com/repo/WittyPi/installWittyPi.sh`  
 `pi@raspberrypi ~ $ sudo sh installWittyPi.sh`
+
+[New](https://www.uugear.com/product/witty-pi-3-mini-realtime-clock-and-power-management-for-raspberry-pi/)
+```
+wget http://www.uugear.com/repo/WittyPi3/install.sh
+sudo sh install.sh
+rm /etc/init.d/uwi
+```
 
 ## Change hostname
 raspi-config
