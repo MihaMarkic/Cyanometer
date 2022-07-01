@@ -369,6 +369,8 @@ namespace Raspberry.IO.InterIntegratedCircuit
                     throw new InvalidOperationException("No I2C device exist on the specified pins");
 
                 case ConnectorPinout.Plus:
+                    // unknown to support Pi3
+                case ConnectorPinout.Unknown:
                     if (sdaPin == ProcessorPin.Pin2 && sclPin == ProcessorPin.Pin3)
                         return GetProcessorBscAddress(Board.Current.Processor);
                     throw new InvalidOperationException("No I2C device exist on the specified pins");
