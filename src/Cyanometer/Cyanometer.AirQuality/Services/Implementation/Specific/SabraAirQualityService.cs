@@ -75,7 +75,14 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
 
         public static DateTime GetDate(ILogger logger, XElement root)
         {
-            return DateTime.Parse((string)root.Attribute("ende"), new CultureInfo("ch"));
+            string text = (string)root.Attribute("ende");
+            string[] parts = text.Split(' ');
+            string dateText = parts[0];
+            string timeText = parts[1];
+            string[] dateParts = dateText.Split('.');
+            string[] timeParts = timeText.Split(':');
+            return new DateTime(int.Parse(dateParts[2]), int.Parse(dateParts[1]), int.Parse(dateParts[0]),
+                int.Parse(timeParts[0]), int.Parse(timeParts[1]), int.Parse(timeParts[2]));
         }
 
         public async Task<XDocument> GetDataAsync(CancellationToken ct)

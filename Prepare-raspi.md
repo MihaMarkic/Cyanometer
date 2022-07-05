@@ -56,6 +56,11 @@ sudo sh install.sh
 rm /etc/init.d/uwi
 ```
 
+## Locales installation (where needed)
+When using Sabra air quality service (Geneva Air), de_DE locale is required
+apt clean && apt -y update && apt install -y locales && locale-gen de_DE.UTF-8 && locale -a \
+	&& apt clean
+
 ## Change hostname
 raspi-config
 or
