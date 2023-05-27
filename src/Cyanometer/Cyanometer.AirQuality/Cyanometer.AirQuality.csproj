@@ -111,6 +111,7 @@
     <Compile Include="Services\Implementation\Specific\ArsoService.cs" />
     <Compile Include="Services\Implementation\FakeShiftRegister.cs" />
     <Compile Include="Services\Implementation\ShiftRegister.cs" />
+    <Compile Include="Services\Implementation\Specific\UmweltKtnGvAtAirQualityService.cs" />
     <Compile Include="Services\Implementation\Specific\SabraAirQualityService.cs" />
     <Compile Include="Services\Implementation\Specific\GiosAirQualityService.cs" />
     <Compile Include="Services\Implementation\Specific\SachsenAirQualityService.cs" />

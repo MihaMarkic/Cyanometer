@@ -38,6 +38,9 @@ namespace Cyanometer.AirQuality
                 case AirQualitySource.Sachsen:
                     builder.RegisterType<SachsenAirQualityService>().As<IAirQualityService>();
                     break;
+                case AirQualitySource.UmweltKtnGvAt:
+                    builder.RegisterType<UmweltKtnGvAtAirQualityService>().As<IAirQualityService>();
+                    break;
             }
             builder.RegisterType<RestClient>();
             builder.RegisterType<TwitterPush>().As<ITwitterPush>();
