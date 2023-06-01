@@ -79,3 +79,10 @@ Copy `NLog.config` from *src/Cyanometer/Cyanometer.Manager*
 Add entry to /etc/rc.local before last line:
 
 `mono /home/pi/cyano/cyanometer.exe &`
+
+## Wireguard
+
+`sudo apt update && apt install wireguard`
+Copy configuration to `/etc/wireguard/wg0.conf`
+Test start with `sudo wg-quick up wg0`
+`sudo systemctl enable --now wg-quick@wg0` to enable as service

@@ -174,7 +174,8 @@ namespace Cyanometer.AirQuality.Services.Implementation.Specific
         public async Task<string[]> GetDataAsync(CancellationToken ct)
         {
             var request = new RestRequest("http://www.umwelt.ktn.gv.at/luft/online/Daten/AtelierPrusnik/AtelierPrusnik.txt", Method.Get);
-            var response = await client.ExecuteAsync(request, ct);
+            request.AddHeader("Accept", "text/plain");
+            var response = await client.GetAsync(request, ct);
             var stringReader = new StringReader(response.Content);
             var lines = new List<string>();
             string line;
